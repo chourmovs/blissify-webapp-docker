@@ -28,23 +28,31 @@ app.get('/find-directory', (req, res) => {
     });
 });
 
-// Route pour lancer l'analyse
-app.get('/start-analysis', (req, res) => {
+// Route pour monter le partage NAS (lecture seule)
+app.get('/mount-nas', (req, res) => {
+    const networkPath = req.query.path; // Récupère le chemin du dossier NAS
 
-    const networkPath = req.query.path;
-    const command = `blissify init ${networkPath}`;
-    const analysis = exec(command);
-
-    analysis.stdout.on('data', (data) => {
-        res.write(data);
+    // Commande pour monter le partage NAS en lecture seule
+    const mountCommand = `sudo mount -o ro -t cifs ${networkPath} /mnt/Musique`; // Modifiez le type de montage si nécessaire
+    
+    exec(mountCommand, (error, stdout, stderr) => {
+        if (error) {
+            return res.status(500).send(`Erreur lors du montage : ${stderr}`);
+        }
+        res.send(`Partage NAS monté avec succès : ${stdout}`);
     });
+});
 
-    analysis.stderr.on('data', (data) => {
-        res.write(`Erreur: ${data}`);
-    });
-
-    analysis.on('close', (code) => {
-        res.end(`\nProcessus terminé avec le code: ${code}`);
+// Route pour lancer blissify init après le montage
+app.get('/run-blissify', (req, res) => {
+    // Utiliser le chemin monté
+    const command = `blissify init /mnt/Musique`;
+    
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            return res.status(500).send(`Erreur lors de l'exécution de blissify : ${stderr}`);
+        }
+        res.send(`Blissify a été exécuté avec succès : ${stdout}`);
     });
 });
 
@@ -64,7 +72,7 @@ app.get('/search-volumio', (req, res) => {
 // Route pour uploader le fichier song.db vers Volumio via SFTP
 app.post('/upload-songdb', (req, res) => {
     const conn = new Client();
-    const songDbPath = '/path/to/song.db';  // Remplacez par le chemin de votre song.db
+    const songDbPath = '~/.local/share/bliss-rs/song.db';  // Remplacez par le chemin de votre song.db
     const remotePath = '/home/volumio/.local/share/bliss-rs/song.db';
 
     conn.on('ready', () => {
@@ -77,7 +85,7 @@ app.post('/upload-songdb', (req, res) => {
             });
         });
     }).connect({
-        host: '192.168.1.100',  // Adresse IP de l'instance Volumio trouvée
+        host: '192.168.1.20',  // Adresse IP de l'instance Volumio trouvée
         port: 22,
         username: 'volumio',
         password: 'volumio'  // Remplacez par le mot de passe correct
