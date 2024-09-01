@@ -5,12 +5,22 @@ const path = require('path');
 const sftpUpload = require('sftp-upload');
 
 const app = express();
-app.use(express.static('public'));  // Servir les fichiers statiques comme HTML, CSS, JS
+const port = 3000;
 
-// Route pour rechercher la bibliothèque musicale
-app.get('/search-music', (req, res) => {
-    // Implémentation pour rechercher la bibliothèque musicale
-    exec('find /path/to/network -type d', (error, stdout, stderr) => {
+// Servir les fichiers statiques depuis le dossier public
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Route pour la page d'accueil
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Route pour rechercher des répertoires
+app.get('/find-directory', (req, res) => {
+    const networkPath = req.query.path; // Récupère le chemin du dossier réseau
+
+    // Commande find
+    exec(`find ${networkPath} -type d`, (error, stdout, stderr) => {
         if (error) {
             return res.status(500).send(`Erreur: ${stderr}`);
         }
@@ -20,7 +30,9 @@ app.get('/search-music', (req, res) => {
 
 // Route pour lancer l'analyse
 app.get('/start-analysis', (req, res) => {
-    const command = 'blissify init';
+
+    const networkPath = req.query.path;
+    const command = `blissify init ${networkPath}`;
     const analysis = exec(command);
 
     analysis.stdout.on('data', (data) => {
