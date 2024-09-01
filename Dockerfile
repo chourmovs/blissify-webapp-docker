@@ -1,31 +1,39 @@
-# Étape 1 : Utiliser une image de base Arch Linux
-FROM archlinux:latest
+# Étape 1 : Construction de l'application dans une image de build
+FROM archlinux:latest AS build
 
-# Étape 2 : Mettre à jour les paquets et installer les dépendances
+# Mettre à jour les paquets et installer les dépendances nécessaires à la compilation
 RUN pacman -Syu --noconfirm \
-    && pacman -S --noconfirm base-devel clang ffmpeg git curl nodejs npm
+    && pacman -S --noconfirm base-devel clang ffmpeg git curl
 
-# Étape 3 : Installer Rust via rustup
+# Installer Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Étape 4 : Cloner et compiler blissify-rs
+# Cloner et compiler blissify-rs
 WORKDIR /app
 RUN git clone https://github.com/Polochon-street/blissify-rs.git .
 RUN cargo build --release
 
-# Étape 5 : Configurer et installer les dépendances de la webapp
+# Étape 2 : Créer l'image finale minimale
+FROM archlinux:latest
+
+# Installer uniquement les dépendances nécessaires à l'exécution
+RUN pacman -Syu --noconfirm \
+    && pacman -S --noconfirm ffmpeg openssh
+
+# Copier l'exécutable compilé depuis l'étape de build
+COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
+
+# Copier les fichiers de la webapp dans l'image finale
 WORKDIR /app/webapp
-
-# Initialiser le projet Node.js et installer les dépendances
-RUN npm init -y
-RUN npm install express child_process ssh2 sftp-upload
-
-# Copier les fichiers de la webapp dans l'image
 COPY ./webapp /app/webapp
+
+# Installer Node.js et les dépendances de la webapp
+RUN pacman -S --noconfirm nodejs npm
+RUN npm install
 
 # Exposer le port 3000
 EXPOSE 3000
 
-# Commande pour démarrer la webapp
+# Commande de démarrage de la webapp
 CMD ["node", "app.js"]
