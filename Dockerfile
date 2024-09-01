@@ -5,8 +5,6 @@ FROM archlinux:latest AS build
 RUN pacman -Syu --noconfirm \
     && pacman -S --noconfirm base-devel clang ffmpeg git curl cifs-utils
 
-# Créer le répertoire de montage
-RUN mkdir -p /mnt/Musique
 
 # Installer Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -19,6 +17,9 @@ RUN cargo build --release
 
 # Étape 2 : Créer l'image finale minimale
 FROM archlinux:latest
+
+# Créer le répertoire de montage
+RUN mkdir -p /mnt/Musique
 
 # Installer uniquement les dépendances nécessaires à l'exécution
 RUN pacman -Syu --noconfirm \
