@@ -22,7 +22,7 @@ FROM archlinux:latest
 
 # Installer uniquement les dépendances nécessaires à l'exécution
 RUN pacman -Syu --noconfirm \
-    && pacman -S --noconfirm openssh cifsutils
+    && pacman -S --noconfirm openssh
 
 
 # Copier l'exécutable compilé depuis l'étape de build
