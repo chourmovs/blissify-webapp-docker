@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blissify Webapp</title>
+</head>
+<body>
+    <h1>Blissify Webapp</h1>
+    
+    <!-- Bouton pour rechercher la bibliothèque musicale -->
+    <form id="network-path-form">
+        <label for="network-path">Entrez le chemin du dossier réseau :</label>
+        <input type="text" id="network-path" name="network-path" placeholder="smb://192.168.1.xxx/Musique" required>
+        <button type="submit">Rechercher</button>
+    </form>
+
+   <!--  <button onclick="searchMusic()">Rechercher Bibliothèque Musicale</button>
+    <pre id="music-output"></pre> -->
+
+    <!-- Bouton pour lancer l'analyse -->
+    <button onclick="startAnalysis()">Lancer l'Analyse</button>
+    <pre id="analysis-output"></pre>
+
+    <!-- Bouton pour chercher l'instance Volumio -->
+    <button onclick="searchVolumio()">Chercher Volumio</button>
+    <pre id="volumio-output"></pre>
+
+    <!-- Bouton pour uploader song.db -->
+    <button onclick="uploadSongDb()">Uploader song.db</button>
+    <pre id="upload-output"></pre>
+
+   <script> 
+        
+        function searchMusic() {
+            fetch('/search-music')
+                .then(response => response.text())
+                .then(data => document.getElementById('music-output').innerText = data);
+        } 
+
+        function startAnalysis() {
+            fetch('/start-analysis')
+                .then(response => response.text())
+                .then(data => document.getElementById('analysis-output').innerText = data);
+        }
+
+        function searchVolumio() {
+            fetch('/search-volumio')
+                .then(response => response.text())
+                .then(data => document.getElementById('volumio-output').innerText = data);
+        }
+
+        function uploadSongDb() {
+            fetch('/upload-songdb', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => document.getElementById('upload-output').innerText = data);
+        }
+
+        document.getElementById('network-path-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const networkPath = document.getElementById('network-path').value;
+
+            fetch(`/find-directory?path=${encodeURIComponent(networkPath)}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('result').innerText = data;
+                })
+                .catch(error => {
+                    document.getElementById('result').innerText = `Erreur: ${error}`;
+                });
+        });
+
+    </script>
+</body>
+</html>
