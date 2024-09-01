@@ -35,7 +35,6 @@ COPY ./webapp /app/webapp
 # Installer Node.js et les dépendances de la webapp
 RUN pacman -S --noconfirm nodejs npm
 RUN npm install express child_process ssh2 sftp-upload
-RUN npm install
 
 # Exposer le port 3000
 EXPOSE 3000
