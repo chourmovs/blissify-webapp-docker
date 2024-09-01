@@ -62,7 +62,7 @@
                     document.getElementById('result').innerText = data;
 
                     // Lancer blissify init après le montage
-                    fetch(`/run-blissify`)
+                    fetch(`/start-analysis`)
                         .then(response => response.text())
                         .then(data => {
                             document.getElementById('result').innerText += `\n\n${data}`;
