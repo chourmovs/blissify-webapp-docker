@@ -3,7 +3,7 @@ FROM archlinux:latest AS build
 
 # Mettre à jour les paquets et installer les dépendances nécessaires à la compilation
 RUN pacman -Syu --noconfirm \
-    && pacman -S --noconfirm base-devel clang ffmpeg git curl cifsutils
+    && pacman -S --noconfirm base-devel clang ffmpeg git curl cifs-utils
 
 # Créer le répertoire de montage
 RUN mkdir -p /mnt/Musique
