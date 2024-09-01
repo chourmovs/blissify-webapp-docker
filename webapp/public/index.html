@@ -12,7 +12,7 @@
     <form id="network-path-form">
         <label for="network-path">Entrez le chemin du dossier réseau :</label>
         <input type="text" id="network-path" name="network-path" placeholder="i.e. \\192.168.1.xxx/Music" required>
-        <button type="submit">Rechercher</button>
+        <button type="submit">Search</button>
     </form>
 
    <!--  <button onclick="searchMusic()">Rechercher Bibliothèque Musicale</button>
@@ -60,13 +60,24 @@
             event.preventDefault();
             const networkPath = document.getElementById('network-path').value;
 
-            fetch(`/find-directory?path=${encodeURIComponent(networkPath)}`)
+            // Monter le partage NAS
+            fetch(`/mount-nas?path=${encodeURIComponent(networkPath)}`)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('result').innerText = data;
+
+                    // Lancer blissify init après le montage
+                    fetch(`/run-blissify`)
+                        .then(response => response.text())
+                        .then(data => {
+                            document.getElementById('result').innerText += `\n\n${data}`;
+                        })
+                        .catch(error => {
+                            document.getElementById('result').innerText += `\nErreur lors de l'exécution de blissify : ${error}`;
+                        });
                 })
                 .catch(error => {
-                    document.getElementById('result').innerText = `Erreur: ${error}`;
+                    document.getElementById('result').innerText = `Erreur lors du montage : ${error}`;
                 });
         });
 
