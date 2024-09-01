@@ -33,7 +33,7 @@ app.get('/mount-nas', (req, res) => {
     const networkPath = req.query.path; // Récupère le chemin du dossier NAS
 
     // Commande pour monter le partage NAS en lecture seule sans sudo
-    const mountCommand = `mount -o ro -t cifs ${networkPath} /mnt/Musique`; // Modifiez le type de montage si nécessaire
+    const mountCommand = `mount -o ro,username=chourmovs,password=3$*ES3KSu4tYtX -t cifs ${networkPath} /mnt/Musique`; // Modifiez le type de montage si nécessaire
     
     exec(mountCommand, (error, stdout, stderr) => {
         if (error) {
