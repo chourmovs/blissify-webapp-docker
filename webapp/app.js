@@ -28,6 +28,9 @@ app.get('/find-directory', (req, res) => {
     });
 });
 
+
+
+
 // Route pour monter le partage NAS (lecture seule)
 app.get('/mount-nas', (req, res) => {
     const networkPath = req.query.path; // Récupère le chemin du dossier NAS
@@ -44,7 +47,7 @@ app.get('/mount-nas', (req, res) => {
 });
 
 // Route pour lancer blissify init après le montage
-app.get('/run-blissify', (req, res) => {
+app.get('/start-analysis', (req, res) => {
     // Utiliser le chemin monté
     const command = `blissify init /mnt/Musique`;
     
