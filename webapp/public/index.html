@@ -8,19 +8,14 @@
 <body>
     <h1>Blissify Webapp</h1>
     
-    <!-- Bouton pour rechercher la bibliothèque musicale -->
     <form id="network-path-form">
         <label for="network-path">Entrez le chemin du dossier réseau :</label>
-        <input type="text" id="network-path" name="network-path" placeholder="i.e. \\192.168.1.xxx/Music" required>
-        <button type="submit">Search</button>
+        <input type="text" id="network-path" name="network-path" placeholder="smb://192.168.1.xxx/Musique" required>
+        <button type="submit">Monter et Lancer</button>
     </form>
 
-   <!--  <button onclick="searchMusic()">Rechercher Bibliothèque Musicale</button>
-    <pre id="music-output"></pre> -->
-
-    <!-- Bouton pour lancer l'analyse -->
-    <button onclick="startAnalysis()">Lancer l'Analyse</button>
-    <pre id="analysis-output"></pre>
+    <button id="start-analysis" style="display:none;">Démarrer l'Analyse</button>
+    <div id="result"></div>
 
     <!-- Bouton pour chercher l'instance Volumio -->
     <button onclick="searchVolumio()">Chercher Volumio</button>
