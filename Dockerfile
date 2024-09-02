@@ -60,4 +60,5 @@ EXPOSE 3000
 EXPOSE 6600
 
 # Commande de démarrage de la webapp
-CMD ["node", "app.js", "mpd", "--no-daemon"]
+CMD ["node", "app.js"]
+CMD ["mpd", "--no-daemon"]
