@@ -23,7 +23,7 @@ RUN mkdir -p /mnt/Musique
 
 # Installer uniquement les dépendances nécessaires à l'exécution
 RUN pacman -Syu --noconfirm \
-    && pacman -S --noconfirm openssh
+    && pacman -S --noconfirm openssh ffmpeg mpd mpc
 
 
 # Copier l'exécutable compilé depuis l'étape de build
@@ -34,7 +34,8 @@ WORKDIR /app/webapp
 COPY ./webapp /app/webapp
 
 # Installer Node.js et les dépendances de la webapp
-RUN pacman -S --noconfirm nodejs npm ffmpeg mpd mpc
+RUN pacman -S --noconfirm nodejs npm  
+#ffmpeg mpd mpc
 RUN npm install
 
 RUN mkdir -p /var/lib/mpd/music \
