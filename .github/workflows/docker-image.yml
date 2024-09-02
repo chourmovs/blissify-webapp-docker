@@ -7,7 +7,9 @@ on:
   pull_request:
     branches:
       - main  # Trigger the workflow on pull requests to the main branch
-
+  schedule:
+    - cron: '0 0 * * 1'  # Déclenche le workflow chaque lundi à minuit UTC
+    
 jobs:
   build:
     runs-on: ubuntu-latest
