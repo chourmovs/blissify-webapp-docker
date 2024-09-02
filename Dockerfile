@@ -34,7 +34,7 @@ WORKDIR /app/webapp
 COPY ./webapp /app/webapp
 
 # Installer Node.js et les dépendances de la webapp
-RUN pacman -S --noconfirm nodejs npm
+RUN pacman -S --noconfirm nodejs npm ffmpeg
 RUN npm install
 
 # Exposer le port 3000
