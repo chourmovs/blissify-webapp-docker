@@ -3,10 +3,10 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Déclenche le workflow à chaque push sur la branche "main"
+      - main  # Trigger the workflow on pushes to the main branch
   pull_request:
     branches:
-      - main  # Déclenche le workflow à chaque pull request vers la branche "main"
+      - main  # Trigger the workflow on pull requests to the main branch
 
 jobs:
   build:
@@ -31,6 +31,8 @@ jobs:
         context: .
         push: true
         tags: chourmovs/blissify-webapp:latest
+        cache-from: type=registry,ref=chourmovs/blissify-webapp:cache
+        cache-to: type=registry,ref=chourmovs/blissify-webapp:cache,mode=max
 
     - name: Image details
       run: docker images
