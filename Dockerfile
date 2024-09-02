@@ -34,11 +34,29 @@ WORKDIR /app/webapp
 COPY ./webapp /app/webapp
 
 # Installer Node.js et les dépendances de la webapp
-RUN pacman -S --noconfirm nodejs npm ffmpeg
+RUN pacman -S --noconfirm nodejs npm ffmpeg mpd mpc
 RUN npm install
+
+RUN mkdir -p /var/lib/mpd/music \
+    && mkdir -p /var/lib/mpd/playlists \
+    && mkdir -p /var/run/mpd \
+    && mkdir -p /var/log/mpd \
+    && touch /var/lib/mpd/tag_cache /var/lib/mpd/sticker.sql /var/log/mpd/mpd.log
+
+# Configurer MPD pour utiliser /mnt/Musique comme répertoire de musique
+RUN echo 'music_directory "/mnt/Musique"' >> /etc/mpd.conf \
+    && echo 'playlist_directory "/var/lib/mpd/playlists"' >> /etc/mpd.conf \
+    && echo 'db_file "/var/lib/mpd/tag_cache"' >> /etc/mpd.conf \
+    && echo 'log_file "/var/log/mpd/mpd.log"' >> /etc/mpd.conf \
+    && echo 'pid_file "/var/run/mpd/mpd.pid"' >> /etc/mpd.conf \
+    && echo 'state_file "/var/lib/mpd/state"' >> /etc/mpd.conf \
+    && echo 'sticker_file "/var/lib/mpd/sticker.sql"' >> /etc/mpd.conf \
+    && echo 'bind_to_address "0.0.0.0"' >> /etc/mpd.conf \
+    && echo 'port "6600"' >> /etc/mpd.conf
 
 # Exposer le port 3000
 EXPOSE 3000
+EXPOSE 6600
 
 # Commande de démarrage de la webapp
-CMD ["node", "app.js"]
+CMD ["node", "app.js","mpd"]
