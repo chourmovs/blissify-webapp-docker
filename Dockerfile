@@ -38,6 +38,12 @@ RUN pacman -S --noconfirm nodejs npm
 #ffmpeg mpd mpc
 RUN npm install
 
+# Configuration des locales
+RUN sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen && \
+    echo "LANG=en_US.UTF-8" > /etc/locale.conf && \
+    export LANG=en_US.UTF-8
+
 RUN mkdir -p /var/lib/mpd/music \
     && mkdir -p /var/lib/mpd/playlists \
     && mkdir -p /var/run/mpd \
