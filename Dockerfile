@@ -59,5 +59,11 @@ RUN echo 'music_directory "/mnt/Musique"' >> /etc/mpd.conf \
 EXPOSE 3000
 EXPOSE 6600
 
-# Commande de démarrage de la webapp
-CMD ["node", "app.js"];["mpd", "--no-daemon"]
+# Copier le script de démarrage
+COPY start.sh /app/start.sh
+
+# Rendre le script exécutable
+RUN chmod +x /app/start.sh
+
+# Commande de démarrage
+CMD ["/app/start.sh"]
