@@ -6,6 +6,12 @@ if pgrep mpd; then
     pkill mpd
 fi
 
+# Libérer le port 6600 s'il est utilisé par un autre processus
+if lsof -i:6600; then
+    echo "Port 6600 is in use, freeing it..."
+    fuser -k 6600/tcp
+fi
+
 # Démarrer MPD
 echo "Starting MPD..."
 mpd
