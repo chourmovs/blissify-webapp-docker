@@ -1,10 +1,11 @@
 # Étape 1 : Construction de l'application dans une image de build
-FROM archlinux:latest AS build
+FROM ubuntu:latest AS build
 
 # Mettre à jour les paquets et installer les dépendances nécessaires à la compilation
-RUN pacman -Syu --noconfirm \
-    && pacman -S --noconfirm base-devel clang ffmpeg git curl cifs-utils
-
+RUN apt-get update && apt-get install -y \
+    build-essential pkg-config libavutil-dev libavformat-dev \
+    libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev \
+    git curl cifs-utils
 
 # Installer Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -16,16 +17,16 @@ RUN git clone https://github.com/Polochon-street/blissify-rs.git .
 RUN cargo build --release
 
 # Étape 2 : Créer l'image finale minimale
-FROM archlinux:latest
+FROM ubuntu:latest
 
 # Créer le répertoire de montage
 RUN mkdir -p /mnt/Musique
 
 # Installer uniquement les dépendances nécessaires à l'exécution
-RUN pacman -Syu --noconfirm \
-    && pacman -S --noconfirm openssh ffmpeg mpd mpc
-
-
+RUN apt-get update && apt-get install -y \
+    openssh-client ffmpeg mpd mpc \
+    libavutil-dev libavformat-dev \
+    libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev 
 # Copier l'exécutable compilé depuis l'étape de build
 COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 
@@ -34,14 +35,14 @@ WORKDIR /app/webapp
 COPY ./webapp /app/webapp
 
 # Installer Node.js et les dépendances de la webapp
-RUN pacman -S --noconfirm nodejs npm  
-#ffmpeg mpd mpc
+RUN apt-get install -y nodejs npm
 RUN npm install
 
 # Configuration des locales
-RUN sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+RUN apt-get install -y locales && \
+    sed -i 's/^# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen && \
-    echo "LANG=en_US.UTF-8" > /etc/locale.conf && \
+    echo "LANG=en_US.UTF-8" > /etc/default/locale && \
     export LANG=en_US.UTF-8
 
 RUN mkdir -p /var/lib/mpd/music \
