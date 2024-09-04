@@ -17,22 +17,22 @@
     </form>
      <br>
 
-    <h3>2 - 2nd step:</h3> <br>
+    <h3>2 - 2nd step:</h3> 
     <button id="mpc-update-button">MPC update</button>
     <br>
-    <h3>1 - 3rd step</h3> <br>
+    <h3>1 - 3rd step</h3>
     <button id="blissify-init-button">Blissify Init</button>
     <br>
-    <h3>1 -If update is neede</h3> <br>
+    <h3>1 -If update is needed</h3> <br>
     <button id="blissify-update-button">Blissify Update</button>
     <br>
     <!-- Conteneur pour afficher l'output des commandes -->
-    <pre id="console-output"></pre>
+     <pre id="console-output"></pre>
 
     <script>
         function displayOutput(data) {
             // Affiche l'output dans le conteneur dédié
-            document.getElementById('console-output').innerText = data;
+            document.getElementById('console-output').innerText += data;
         }
 
         document.getElementById('network-path-form').addEventListener('submit', function(event) {
