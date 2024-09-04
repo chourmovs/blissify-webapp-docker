@@ -52,7 +52,7 @@ RUN mkdir -p /var/lib/mpd/music \
     && touch /var/lib/mpd/tag_cache /var/lib/mpd/sticker.sql /var/log/mpd/mpd.log
 
 # Configurer MPD pour utiliser /mnt/Musique comme répertoire de musique
-RUN RUN truncate -s 0 /etc/mpd.conf \
+RUN truncate -s 0 /etc/mpd.conf \
     && echo 'music_directory "/mnt/Musique"' >> /etc/mpd.conf \
     && echo 'playlist_directory "/var/lib/mpd/playlists"' >> /etc/mpd.conf \
     && echo 'db_file "/var/lib/mpd/tag_cache"' >> /etc/mpd.conf \
