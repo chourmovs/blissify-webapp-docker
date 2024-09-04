@@ -15,10 +15,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const express = require('express');
-const { exec } = require('child_process');
-const app = express();
-
 app.get('/mount-nas', (req, res) => {
     const networkPath = req.query.path;
 
