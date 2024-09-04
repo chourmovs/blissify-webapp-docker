@@ -62,13 +62,6 @@ app.get('/blissify-update', (req, res) => {
     });
 });
 
-// Le reste de votre app.js
-
-app.listen(3000, () => {
-    console.log('Serveur démarré sur le port 3000');
-});
-
-
 // Route pour chercher l'instance Volumio
 app.get('/search-volumio', (req, res) => {
     // Exécuter une commande pour scanner le réseau (exemple avec nmap)
