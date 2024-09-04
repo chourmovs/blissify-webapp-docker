@@ -7,6 +7,13 @@ RUN apt-get update && apt-get install -y \
     libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev \
     git curl cifs-utils
 
+# Configuration des locales
+RUN apt-get install -y locales && \
+    sed -i 's/^# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen && \
+    echo "LANG=en_US.UTF-8" > /etc/default/locale && \
+    export LANG=en_US.UTF-8
+
 # Installer Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
