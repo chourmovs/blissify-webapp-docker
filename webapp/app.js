@@ -15,26 +15,16 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Route pour rechercher des répertoires
-app.get('/find-directory', (req, res) => {
-    const networkPath = req.query.path; // Récupère le chemin du dossier réseau
-
-    // Commande find
-    exec(`find ${networkPath} -type d`, (error, stdout, stderr) => {
-        if (error) {
-            return res.status(500).send(`Erreur: ${stderr}`);
-        }
-        res.send(stdout);  // Retourne la liste des répertoires trouvés
-    });
-});
-
+const express = require('express');
+const { exec } = require('child_process');
+const app = express();
 
 app.get('/mount-nas', (req, res) => {
-    const networkPath = req.query.path; // Récupère le chemin du dossier NAS
+    const networkPath = req.query.path;
 
     // Commande pour monter le partage NAS en lecture seule sans sudo
-    const mountCommand = `mount -t cifs -o username=chourmovs,password='3$*ES3KSu4tYtX',file_mode=0777,dir_mode=0777,rw ${networkPath} /mnt/Musique`; // Modifiez le type de montage si nécessaire
-     //192.168.1.20/Musique /mnt/Musique
+    const mountCommand = `mount -t cifs -o username=chourmovs,password='3$*ES3KSu4tYtX',file_mode=0777,dir_mode=0777,rw ${networkPath} /mnt/Musique`;
+    
     exec(mountCommand, (error, stdout, stderr) => {
         if (error) {
             return res.status(500).send(`Erreur lors du montage : ${stderr}`);
@@ -43,18 +33,45 @@ app.get('/mount-nas', (req, res) => {
     });
 });
 
-// Route pour lancer blissify init après le montage
-app.get('/start-analysis', (req, res) => {
-    // Utiliser le chemin monté
-    const command = `blissify init /mnt/Musique`;
-    
+app.get('/mpc-update', (req, res) => {
+    const command = `mpc update`;
+
     exec(command, (error, stdout, stderr) => {
         if (error) {
-            return res.status(500).send(`Erreur lors de l'exécution de blissify : ${stderr}`);
+            return res.status(500).send(`Erreur lors de la mise à jour MPC : ${stderr}`);
         }
-        res.send(`Blissify a été exécuté avec succès : ${stdout}`);
+        res.send(`MPC mis à jour avec succès : ${stdout}`);
     });
 });
+
+app.get('/start-analysis', (req, res) => {
+    const command = `blissify init /mnt/Musique`;
+
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            return res.status(500).send(`Erreur lors de l'exécution de blissify init : ${stderr}`);
+        }
+        res.send(`Blissify init exécuté avec succès : ${stdout}`);
+    });
+});
+
+app.get('/blissify-update', (req, res) => {
+    const command = `blissify update`;
+
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            return res.status(500).send(`Erreur lors de l'exécution de blissify update : ${stderr}`);
+        }
+        res.send(`Blissify update exécuté avec succès : ${stdout}`);
+    });
+});
+
+// Le reste de votre app.js
+
+app.listen(3000, () => {
+    console.log('Serveur démarré sur le port 3000');
+});
+
 
 // Route pour chercher l'instance Volumio
 app.get('/search-volumio', (req, res) => {
