@@ -8,8 +8,8 @@
 <body>
     <h1>Blissify WebApp by chourmovs</h1>
 
-    <h3>1 -1rst step</h3> <br>
-    
+    <h3>1 - 1rst step</h3> <br>
+    <a>Put your network share path here</a>
     <form id="network-p <br>ath-form">
         <label for="network-path">Network share path :</label>
         <input type="text" id="network-path" name="path">
@@ -26,13 +26,14 @@
     <h3>1 -If update is needed</h3> <br>
     <button id="blissify-update-button">Blissify Update</button>
     <br>
-    <!-- Conteneur pour afficher l'output des commandes -->
-     <pre id="console-output"></pre>
+   
+     <!-- Conteneur pour afficher l'output des commandes -->
+    <pre id="console-output"></pre>
 
     <script>
         function displayOutput(data) {
             // Affiche l'output dans le conteneur dédié
-            document.getElementById('console-output').innerText += data;
+            document.getElementById('console-output').innerText = data;
         }
 
         document.getElementById('network-path-form').addEventListener('submit', function(event) {
