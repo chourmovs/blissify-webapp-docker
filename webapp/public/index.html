@@ -1,79 +1,82 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestion NAS et Commandes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion NAS et Commandes</title>
 </head>
+
 <body>
-  <h1>Gestion du NAS et des analyses</h1>
+    <h1>Gestion du NAS et des analyses</h1>
 
-  <!-- Network path form section -->
-  <form id="network-path-form">
-    <label for="network-path">Chemin du partage NAS :</label>
-    <input type="text" id="network-path" name="path">
-    <button type="submit">Monter le partage NAS</button>
-  </form>
+    <!-- Network path form section -->
+    <form id="network-path-form">
+        <label for="network-path">Chemin du partage NAS :</label>
+        <input type="text" id="network-path" name="path">
+        <button type="submit">Monter le partage NAS</button>
+    </form>
 
-  <!-- Buttons for different operations -->
-  <button id="mpc-update-button">Mise à jour MPC</button>
-  <button id="blissify-init-button">Blissify Init</button>
-  <button id="blissify-update-button">Blissify Update</button>
+    <!-- Buttons for different operations -->
+    <button id="mpc-update-button">Mise à jour MPC</button>
+    <button id="blissify-init-button">Blissify Init</button>
+    <button id="blissify-update-button">Blissify Update</button>
 
-  <!-- Container for output messages -->
-  <pre id="console-output"></pre>
+    <!-- Container for output messages -->
+    <pre id="console-output"></pre>
 
-  <script>
-    // Function to display output messages in the dedicated container
-    function displayOutput(data) {
-      document.getElementById('console-output').innerText += data;
-    }
-
-    // Event listeners for operations
-    document.getElementById('network-path-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const networkPath = document.getElementById('network-path').value;
-
-      // Mount the NAS share
-      fetch(`/mount-nas?path=${encodeURIComponent(networkPath)}`)
-        .then(response => response.text())
-        .then(displayOutput)
-        .catch(error => {
-          displayOutput(`Erreur lors du montage : ${error}`);
-        });
-    });
-
-    // MPC update after mounting
-    document.getElementById('mpc-update-button').addEventListener('click', function() {
-      fetch('/mpc-update')
-        .then(response => response.text())
-        .then(displayOutput)
-        .catch(error => {
-          displayOutput(`Erreur lors de la mise à jour MPC : ${error}`);
-        });
-    });
-
-    // Trigger blissify init
-    document.getElementById('blissify-init-button').addEventListener('click', function() {
-      fetch('/start-analysis')
-        .then(response => response.text())
-        .then(data => {
+    <script>
+        // Function to display output messages in the dedicated container
+        function displayOutput(data) {
             document.getElementById('console-output').innerText += data;
-        }).catch(error => {
-            console.error('Error:', error);
-        });
-   });
+        }
 
-// Trigger blissify update
-document.getElementById('blissify-update-button').addEventListener('click', function() {
-  fetch('/blissify-update')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('console-output').innerText += data;
-    }).catch(error => {
-        console.error('Error:', error);
-    });
-});
-  </script>
+        // Event listeners for operations
+        document.getElementById('network-path-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const networkPath = document.getElementById('network-path').value;
+
+            // Mount the NAS share
+            fetch(`/mount-nas?path=${encodeURIComponent(networkPath)}`)
+                .then(response => response.text())
+                .then(displayOutput)
+                .catch(error => {
+                    displayOutput(`Erreur lors du montage : ${error}`);
+                });
+        });
+
+        // MPC update after mounting
+        document.getElementById('mpc-update-button').addEventListener('click', function () {
+            fetch('/mpc-update')
+                .then(response => response.text())
+                .then(displayOutput)
+                .catch(error => {
+                    displayOutput(`Erreur lors de la mise à jour MPC : ${error}`);
+                });
+        });
+
+        // Trigger blissify init
+        document.getElementById('blissify-init-button').addEventListener('click', function () {
+            fetch('/start-analysis')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('console-output').innerText += data;
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+        // Trigger blissify update
+        document.getElementById('blissify-update-button').addEventListener('click', function () {
+            fetch('/blissify-update')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('console-output').innerText += data;
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
 </body>
+
 </html>
