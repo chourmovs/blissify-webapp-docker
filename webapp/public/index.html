@@ -6,34 +6,24 @@
     <title>Gestion NAS et Commandes</title>
 </head>
 <body>
-    <h1>Blissify WebApp by chourmovs</h1>
+    <h1>Gestion du NAS et des analyses</h1>
 
-    <h3>1 - 1rst step</h3> <br>
-    <a>Put your network share path here</a>
-    <form id="network-p <br>ath-form">
-        <label for="network-path">Network share path :</label>
+    <form id="network-path-form">
+        <label for="network-path">Chemin du partage NAS :</label>
         <input type="text" id="network-path" name="path">
-        <button type="submit">Mount the network share</button>
+        <button type="submit">Monter le partage NAS</button>
     </form>
-     <br>
 
-    <h3>2 - 2nd step:</h3> 
-    <button id="mpc-update-button">MPC update</button>
-    <br>
-    <h3>1 - 3rd step</h3>
+    <button id="mpc-update-button">Mise à jour MPC</button>
     <button id="blissify-init-button">Blissify Init</button>
-    <br>
-    <h3>1 -If update is needed</h3> <br>
     <button id="blissify-update-button">Blissify Update</button>
-    <br>
-   
-     <!-- Conteneur pour afficher l'output des commandes -->
+
     <pre id="console-output"></pre>
 
     <script>
         function displayOutput(data) {
             // Affiche l'output dans le conteneur dédié
-            document.getElementById('console-output').innerText = data;
+            document.getElementById('console-output').innerText += data;
         }
 
         document.getElementById('network-path-form').addEventListener('submit', function(event) {
