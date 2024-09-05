@@ -80,29 +80,42 @@ app.get('/mpc-update', async (req, res) => {
 // Start analysis (assuming blissify is command)
 app.get('/start-analysis', async (req, res) => {
   try {
-    const analysisProcess = spawn('blissify', ['start']);
-    let output = '';
-
-    analysisProcess.stdout.on('data', (data) => {
+    const analysisProcess = spawn('blissify', ['init', '/mnt/Musique']);
+      let output = '';
+  
+      analysisProcess.stdout.on('data', (data) => {
       output += data.toString();
-      console.log(`Analysis stdout: ${data}`);
-    });
 
-    analysisProcess.stderr.on('data', (data) => {
-      output += data.toString();
-      console.error(`Analysis stderr: ${data}`);
+    console.log(`Analysis stdout: ${data}`);
+  });
+  
+  analysisProcess.stderr.on('data', (data) => {
+    output += data.toString();
+    console.error(`Analysis stderr: ${data}`);
+  });
+  
+  const exitPromise = new Promise((resolve, reject) => {
+    analysisProcess.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Analysis process exited with code ${code}`));
+      }
     });
-
-    await new Promise((resolve) => {
-      analysisProcess.on('close', resolve);
+  
+    analysisProcess.on('error', (err) => {
+      reject(err);
     });
-
-    res.send(`Analysis started successfully: ${output}`);
-  } catch (error) {
-    console.error('Analysis start command failed:', error);
-    res.status(500).send('Error starting analysis');
-  }
-});
+  });
+  
+  await exitPromise;
+  
+  res.send(`Analysis started successfully: ${output}`);
+} catch (error) {
+  console.error('Analysis start command failed:', error);
+  res.status(500).send('Error starting analysis');
+}
+});  
 
 // Blissify update
 app.get('/blissify-update', async (req, res) => {
