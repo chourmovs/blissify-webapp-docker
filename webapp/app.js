@@ -25,7 +25,7 @@ app.get('/mount-nas', async (req, res) => {
   }
 
   try {
-    const mountCommand = `mount -t cifs -o username=chourmovs,password='3$*ES3KSu4tYtX',file_mode=0777,dir_mode=0777,rw ${networkPath} /mnt/Music`;
+    const mountCommand = `mount -t cifs -o username=chourmovs,password='3$*ES3KSu4tYtX',file_mode=0777,dir_mode=0777,rw ${networkPath} /mnt/Musique`;
     const mountProcess = spawn('sh', ['-c', mountCommand]);
 
     let output = '';
