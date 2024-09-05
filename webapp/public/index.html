@@ -57,21 +57,23 @@
     document.getElementById('blissify-init-button').addEventListener('click', function() {
       fetch('/start-analysis')
         .then(response => response.text())
-        .then(displayOutput)
-        .catch(error => {
-          displayOutput(`Erreur lors de l'exécution de blissify init : ${error}`);
+        .then(data => {
+            document.getElementById('console-output').innerText += data;
+        }).catch(error => {
+            console.error('Error:', error);
         });
-    });
+   });
 
-    // Trigger blissify update
-    document.getElementById('blissify-update-button').addEventListener('click', function() {
-      fetch('/blissify-update')
-        .then(response => response.text())
-        .then(displayOutput)
-        .catch(error => {
-          displayOutput(`Erreur lors de l'exécution de blissify update : ${error}`);
-        });
+// Trigger blissify update
+document.getElementById('blissify-update-button').addEventListener('click', function() {
+  fetch('/blissify-update')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('console-output').innerText += data;
+    }).catch(error => {
+        console.error('Error:', error);
     });
+});
   </script>
 </body>
 </html>
