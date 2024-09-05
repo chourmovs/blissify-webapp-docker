@@ -1,110 +1,133 @@
 process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
-    // Vous pouvez arrêter le serveur ici, mais pour les besoins de ce débogage, nous allons simplement afficher l'exception dans la console.
+  console.error('Uncaught Exception:', error);
+  // You can stop the server here, but for the purposes of this debugging, we'll simply log the exception to the console.
 });
 
 const express = require('express');
-const { exec } = require('child_process');
-const Client = require('ssh2').Client;
-const path = require('path');
-const sftpUpload = require('sftp-upload');
-const { spawn } = require('child_process');
-
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: false }));
 
 // Serve static files from the public directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Route for the homepage
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/mount-nas', (req, res) => {
-    const networkPath = req.query.path;
+// Mount NAS share
+app.get('/mount-nas', async (req, res) => {
+  const { path: networkPath } = req.query;
 
-    // Command to mount the NAS share as read-only with no sudo
+  if (!networkPath) {
+    return res.status(400).send('Missing required parameter: path');
+  }
+
+  try {
     const mountCommand = `mount -t cifs -o username=chourmovs,password='3$*ES3KSu4tYtX',file_mode=0777,dir_mode=0777,rw ${networkPath} /mnt/Music`;
-
     const mountProcess = spawn('sh', ['-c', mountCommand]);
 
     let output = '';
 
     mountProcess.stdout.on('data', (data) => {
-        output += data.toString();
+      output += data.toString();
+      console.log(`Mount stdout: ${data}`);
     });
 
     mountProcess.stderr.on('data', (data) => {
-        output += data.toString();
+      output += data.toString();
+      console.error(`Mount stderr: ${data}`);
     });
 
-    mountProcess.on('close', (code) => {
-        if (code !== 0) {
-            return res.status(500).send(`Error mounting share: ${output}`);
-        }
-        res.send(`NAS share mounted successfully: ${output}`);
+    await new Promise((resolve) => {
+      mountProcess.on('close', resolve);
     });
+
+    res.send(`NAS share mounted successfully: ${output}`);
+  } catch (error) {
+    console.error('Mount command failed:', error);
+    res.status(500).send('Error mounting NAS share');
+  }
 });
 
-app.get('/mpc-update', (req, res) => {
-    const command = 'mpc update';
-    const mpcProcess = spawn('sh', ['-c', command]);
-
-    res.setHeader('Content-Type', 'text/plain');
-
+// Update MPC (Music Player Daemon)
+app.get('/mpc-update', async (req, res) => {
+  try {
+    const mpcProcess = spawn('mpc', ['update']);
+    let output = '';
     mpcProcess.stdout.on('data', (data) => {
-        res.write(data.toString());
+      output += data.toString();
+      res.write(data); // Send data chunks to the client
     });
 
     mpcProcess.stderr.on('data', (data) => {
-        res.write(data.toString());
+      output += data.toString();
+      console.error(`MPC stderr: ${data}`);
     });
 
-    mpcProcess.on('close', (code) => {
-        if (code !== 0) {
-            res.write(`\nError updating MPC (code ${code})`);
-        } else {
-            res.write(`\nMPC updated successfully`);
-        }
-        res.end();
+    await new Promise((resolve) => {
+      mpcProcess.on('close', resolve);
     });
+
+    res.end(`MPC updated successfully:\n${output}`);
+  } catch (error) {
+    console.error('MPC update command failed:', error);
+    res.status(500).send('Error updating MPC');
+  }
 });
 
-app.get('/blissify-update', (req, res) => {
-    const command = 'blissify update';
-    const updateProcess = spawn('sh', ['-c', command]);
+// Start analysis (assuming blissify is command)
+app.get('/start-analysis', async (req, res) => {
+  try {
+    const analysisProcess = spawn('blissify', ['start']);
+    let output = '';
 
-    res.setHeader('Content-Type', 'text/plain');
+    analysisProcess.stdout.on('data', (data) => {
+      output += data.toString();
+      console.log(`Analysis stdout: ${data}`);
+    });
 
+    analysisProcess.stderr.on('data', (data) => {
+      output += data.toString();
+      console.error(`Analysis stderr: ${data}`);
+    });
+
+    await new Promise((resolve) => {
+      analysisProcess.on('close', resolve);
+    });
+
+    res.send(`Analysis started successfully: ${output}`);
+  } catch (error) {
+    console.error('Analysis start command failed:', error);
+    res.status(500).send('Error starting analysis');
+  }
+});
+
+// Blissify update
+app.get('/blissify-update', async (req, res) => {
+  try {
+    const updateProcess = spawn('blissify', ['update']);
+    let output = '';
     updateProcess.stdout.on('data', (data) => {
-        res.write(data.toString());
+      output += data.toString();
+      res.write(data); // Send data chunks to the client
     });
 
     updateProcess.stderr.on('data', (data) => {
-        res.write(data.toString());
+      output += data.toString();
+      console.error(`Blissify stderr: ${data}`);
     });
 
-    updateProcess.on('close', (code) => {
-        if (code !== 0) {
-            res.write(`\nError executing blissify update (code ${code})`);
-        } else {
-            res.write(`\nBlissify update executed successfully`);
-        }
-        res.end();
+    await new Promise((resolve) => {
+      updateProcess.on('close', resolve);
     });
+
+    res.end(`Blissify updated successfully:\n${output}`);
+  } catch (error) {
+    console.error('Blissify update command failed:', error);
+    res.status(500).send('Error updating Blissify');
+  }
 });
 
-// Route to find the Volumio instance
-app.get('/search-volumio', (req, res) => {
-    // Execute a command to scan the network (example with nmap)
-    exec('nmap -p 22 --open -sV 192.168.1.0/24', (error, stdout, stderr) => {
-        if (error) {
-            return res.status(500).send(`Error: ${stderr}`);
-        }
-        // Parse stdout to find Volumio instances
-        const volumioInstance = stdout.match(/192\.168\.1\.\d+/); // simple example of regex
-        res.send(volumioInstance ? volumioInstance[0] : 'No Volumio instances found');
-    });
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
 });
-
