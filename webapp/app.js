@@ -3,6 +3,7 @@ const { exec } = require('child_process');
 const Client = require('ssh2').Client;
 const path = require('path');
 const sftpUpload = require('sftp-upload');
+const { spawn } = require('child_process');
 
 const app = express();
 const port = 3000;
@@ -21,44 +22,96 @@ app.get('/mount-nas', (req, res) => {
     // Commande pour monter le partage NAS en lecture seule sans sudo
     const mountCommand = `mount -t cifs -o username=chourmovs,password='3$*ES3KSu4tYtX',file_mode=0777,dir_mode=0777,rw ${networkPath} /mnt/Musique`;
     
-    exec(mountCommand, (error, stdout, stderr) => {
-        if (error) {
-            return res.status(500).send(`Erreur lors du montage : ${stderr}`);
+    const mountProcess = spawn('sh', ['-c', mountCommand]);
+
+    let output = '';
+
+    mountProcess.stdout.on('data', (data) => {
+        output += data.toString();
+    });
+
+    mountProcess.stderr.on('data', (data) => {
+        output += data.toString();
+    });
+
+    mountProcess.on('close', (code) => {
+        if (code !== 0) {
+            return res.status(500).send(`Erreur lors du montage : ${output}`);
         }
-        res.send(`Partage NAS monté avec succès : ${stdout}`);
+        res.send(`Partage NAS monté avec succès : ${output}`);
+    });
+});
+
+
+app.get('/start-analysis', (req, res) => {
+    const command = 'blissify init /mnt/Musique';
+    const analysisProcess = spawn('sh', ['-c', command]);
+
+    res.setHeader('Content-Type', 'text/plain');
+
+    analysisProcess.stdout.on('data', (data) => {
+        res.write(data.toString());
+    });
+
+    analysisProcess.stderr.on('data', (data) => {
+        res.write(data.toString());
+    });
+
+    analysisProcess.on('close', (code) => {
+        if (code !== 0) {
+            res.write(`\nErreur lors de l'exécution de blissify init (code ${code})`);
+        } else {
+            res.write(`\nBlissify init exécuté avec succès`);
+        }
+        res.end();
     });
 });
 
 app.get('/mpc-update', (req, res) => {
-    const command = `mpc update`;
+    const command = 'mpc update';
+    const mpcProcess = spawn('sh', ['-c', command]);
 
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            return res.status(500).send(`Erreur lors de la mise à jour MPC : ${stderr}`);
-        }
-        res.send(`MPC mis à jour avec succès : ${stdout}`);
+    res.setHeader('Content-Type', 'text/plain');
+
+    mpcProcess.stdout.on('data', (data) => {
+        res.write(data.toString());
     });
-});
 
-app.get('/start-analysis', (req, res) => {
-    const command = `blissify init /mnt/Musique`;
+    mpcProcess.stderr.on('data', (data) => {
+        res.write(data.toString());
+    });
 
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            return res.status(500).send(`Erreur lors de l'exécution de blissify init : ${stderr}`);
+    mpcProcess.on('close', (code) => {
+        if (code !== 0) {
+            res.write(`\nErreur lors de la mise à jour MPC (code ${code})`);
+        } else {
+            res.write(`\nMPC mis à jour avec succès`);
         }
-        res.send(`Blissify init exécuté avec succès : ${stdout}`);
+        res.end();
     });
 });
 
 app.get('/blissify-update', (req, res) => {
-    const command = `blissify update`;
+    const command = 'blissify update';
+    const updateProcess = spawn('sh', ['-c', command]);
 
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            return res.status(500).send(`Erreur lors de l'exécution de blissify update : ${stderr}`);
+    res.setHeader('Content-Type', 'text/plain');
+
+    updateProcess.stdout.on('data', (data) => {
+        res.write(data.toString());
+    });
+
+    updateProcess.stderr.on('data', (data) => {
+        res.write(data.toString());
+    });
+
+    updateProcess.on('close', (code) => {
+        if (code !== 0) {
+            res.write(`\nErreur lors de l'exécution de blissify update (code ${code})`);
+        } else {
+            res.write(`\nBlissify update exécuté avec succès`);
         }
-        res.send(`Blissify update exécuté avec succès : ${stdout}`);
+        res.end();
     });
 });
 
@@ -97,6 +150,34 @@ app.post('/upload-songdb', (req, res) => {
         password: 'volumio'  // Remplacez par le mot de passe correct
     });
 });
+
+app.get('/test-command', (req, res) => {
+    const command = 'ls /mnt/Musique'; // Simple commande de test
+    const testProcess = spawn('sh', ['-c', command]);
+
+    res.setHeader('Content-Type', 'text/plain');
+
+    testProcess.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+        res.write(data.toString());
+    });
+
+    testProcess.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+        res.write(data.toString());
+    });
+
+    testProcess.on('close', (code) => {
+        console.log(`Processus terminé avec code : ${code}`);
+        if (code !== 0) {
+            res.write(`\nErreur (code ${code})`);
+        } else {
+            res.write(`\nCommande exécutée avec succès`);
+        }
+        res.end();
+    });
+});
+
 
 const PORT = 3000;
 app.listen(PORT, () => {
