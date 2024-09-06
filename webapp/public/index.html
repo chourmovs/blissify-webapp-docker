@@ -26,9 +26,19 @@
     <pre id="console-output"></pre>
 
     <script>
-        // Function to display output messages in the dedicated container
+        // Function to display the last two lines of output in the dedicated container
         function displayOutput(data) {
-            document.getElementById('console-output').innerText += data;
+            const outputElement = document.getElementById('console-output');
+            const currentContent = outputElement.innerText.split('\n');
+
+            // Ajouter la nouvelle ligne reçue
+            currentContent.push(data.trim());
+
+            // Garder uniquement les deux dernières lignes
+            const updatedContent = currentContent.slice(-2).join('\n');
+
+            // Mettre à jour le contenu de <pre>
+            outputElement.innerText = updatedContent;
         }
 
         // Event listeners for operations
@@ -60,12 +70,12 @@
             const eventSource = new EventSource('/start-analysis');
 
             eventSource.onmessage = function (event) {
-                // Ajouter le nouveau contenu sans écraser l'ancien
-                document.getElementById('console-output').innerText += event.data + '\n';
+                // Mettre à jour uniquement les deux dernières lignes
+                displayOutput(event.data);
             };
 
             eventSource.onerror = function (event) {
-                document.getElementById('console-output').innerText += `Erreur : ${event.data}\n`;
+                displayOutput(`Erreur : ${event.data}`);
                 eventSource.close(); // Fermer la connexion SSE en cas d'erreur
             };
         });
@@ -74,10 +84,9 @@
         document.getElementById('blissify-update-button').addEventListener('click', function () {
             fetch('/blissify-update')
                 .then(response => response.text())
-                .then(data => {
-                    document.getElementById('console-output').innerText += data;
-                }).catch(error => {
-                    console.error('Error:', error);
+                .then(displayOutput)
+                .catch(error => {
+                    displayOutput(`Erreur lors de la mise à jour Blissify : ${error}`);
                 });
         });
     </script>
