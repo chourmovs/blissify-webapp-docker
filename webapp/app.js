@@ -82,34 +82,36 @@ app.get('/mpc-update', async (req, res) => {
 
 // Route SSE pour lancer "blissify init"
 app.get('/start-analysis', (req, res) => {
-  const command = 'blissify init /mnt/Musique';
+  const command = 'unbuffer blissify init /mnt/Musique';  // Utilisez unbuffer pour forcer la sortie immédiate
   const analysisProcess = spawn('sh', ['-c', command]);
 
-  // SSE headers
+  // Headers pour SSE
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders();  // Forcer l'envoi des headers
+  res.flushHeaders();  // Forcer l'envoi immédiat des headers
 
-  // Diffuser la sortie en temps réel via SSE
+  // Capturer les données de sortie
   analysisProcess.stdout.on('data', (data) => {
-      res.write(`data: ${data.toString()}\n\n`);
-      res.flush(); // Vidage immédiat après chaque ligne envoyée
-  });
-
-  analysisProcess.stderr.on('data', (data) => {
-      res.write(`data: ${data.toString()}\n\n`);
-      res.flush(); // Vidage immédiat après chaque ligne d'erreur
-  });
-
-  analysisProcess.on('close', (code) => {
-      if (code !== 0) {
-          res.write(`data: Erreur lors de l'exécution de blissify init (code ${code})\n\n`);
-      } else {
-          res.write(`data: Blissify init exécuté avec succès\n\n`);
+    const output = data.toString().split('\n');
+    output.forEach(line => {
+      if (line.trim()) {
+        res.write(`data: ${line.trim()}\n\n`);
+        res.flush(); // Assurer l'envoi immédiat
       }
-      res.flush(); // Forcer l'envoi final
-      res.end();   // Terminer la connexion après l'exécution
+    });
+  });
+
+  // Capturer les erreurs
+  analysisProcess.stderr.on('data', (data) => {
+    res.write(`data: Erreur: ${data.toString()}\n\n`);
+    res.flush(); // Forcer l'envoi immédiat des erreurs
+  });
+
+  // Quand le processus est terminé
+  analysisProcess.on('close', (code) => {
+    res.write(`data: Blissify terminé avec le code ${code}\n\n`);
+    res.end(); // Fin du flux
   });
 });
 

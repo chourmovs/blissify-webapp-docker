@@ -33,7 +33,7 @@ RUN mkdir -p /mnt/Musique
 # Installer uniquement les dépendances nécessaires à l'exécution
 RUN apt-get update && apt-get install -y \
     openssh-client ffmpeg mpd mpc \
-    libavutil-dev libavformat-dev \
+    libavutil-dev libavformat-dev expect\
     libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev 
 # Copier l'exécutable compilé depuis l'étape de build
 COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
