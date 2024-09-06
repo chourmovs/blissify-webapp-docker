@@ -26,19 +26,22 @@
     <pre id="console-output"></pre>
 
     <script>
-        // Function to display the last two lines of output in the dedicated container
+        // Function to display only the last two lines of output
         function displayOutput(data) {
             const outputElement = document.getElementById('console-output');
             const currentContent = outputElement.innerText.split('\n');
 
+            // Clean and add new data
+            const newLine = data.trim();
+
             // Ajouter la nouvelle ligne reçue
-            currentContent.push(data.trim());
+            currentContent.push(newLine);
 
             // Garder uniquement les deux dernières lignes
             const updatedContent = currentContent.slice(-2).join('\n');
 
-            // Mettre à jour le contenu de <pre>
-            outputElement.innerText = updatedContent;
+            // Mettre à jour le contenu de <pre> en assurant qu'il y ait un saut de ligne à la fin
+            outputElement.innerText = updatedContent + '\n';
         }
 
         // Event listeners for operations
