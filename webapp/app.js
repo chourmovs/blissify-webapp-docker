@@ -77,45 +77,34 @@ app.get('/mpc-update', async (req, res) => {
   }
 });
 
-// Start analysis (assuming blissify is command)
-app.get('/start-analysis', async (req, res) => {
-  try {
-    const analysisProcess = spawn('blissify', ['init', '/mnt/Musique']);
-      let output = '';
-  
-      analysisProcess.stdout.on('data', (data) => {
-      output += data.toString();
+app.get('/start-analysis', (req, res) => {
+  const command = 'blissify init /mnt/Musique';
+  const analysisProcess = spawn('sh', ['-c', command]);
 
-    console.log(`Analysis stdout: ${data}`);
+  // SSE headers
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  // Diffuser la sortie en temps réel via SSE
+  analysisProcess.stdout.on('data', (data) => {
+      res.write(`data: ${data.toString()}\n\n`);
   });
-  
+
   analysisProcess.stderr.on('data', (data) => {
-    output += data.toString();
-    console.error(`Analysis stderr: ${data}`);
+      res.write(`data: ${data.toString()}\n\n`);
   });
-  
-  const exitPromise = new Promise((resolve, reject) => {
-    analysisProcess.on('close', (code) => {
-      if (code === 0) {
-        resolve();
+
+  analysisProcess.on('close', (code) => {
+      if (code !== 0) {
+          res.write(`data: Erreur lors de l'exécution de blissify init (code ${code})\n\n`);
       } else {
-        reject(new Error(`Analysis process exited with code ${code}`));
+          res.write(`data: Blissify init exécuté avec succès\n\n`);
       }
-    });
-  
-    analysisProcess.on('error', (err) => {
-      reject(err);
-    });
+      res.end(); // Fermer la connexion après la fin du processus
   });
-  
-  await exitPromise;
-  
-  res.send(`Analysis started successfully: ${output}`);
-} catch (error) {
-  console.error('Analysis start command failed:', error);
-  res.status(500).send('Error starting analysis');
-}
-});  
+}); 
 
 // Blissify update
 app.get('/blissify-update', async (req, res) => {

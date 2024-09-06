@@ -56,14 +56,17 @@
         });
 
         // Trigger blissify init
-        document.getElementById('blissify-init-button').addEventListener('click', function () {
-            fetch('/start-analysis')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('console-output').innerText += data;
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
+        document.getElementById('blissify-init-button').addEventListener('click', function() {
+            const eventSource = new EventSource('/start-analysis');
+
+            eventSource.onmessage = function(event) {
+                document.getElementById('console-output').innerText += event.data + '\n';
+            };
+
+            eventSource.onerror = function(event) {
+                document.getElementById('console-output').innerText += `Erreur : ${event.data}`;
+                eventSource.close(); // Fermer la connexion SSE en cas d'erreur
+            };
         });
 
         // Trigger blissify update
