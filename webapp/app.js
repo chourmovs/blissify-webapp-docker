@@ -10,6 +10,9 @@ const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 const { spawn } = require('child_process');
+const compression = require('compression');
+
+app.use(compression());
 
 // Serve static files from the public directory
 app.get('/', (req, res) => {
