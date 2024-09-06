@@ -56,15 +56,16 @@
         });
 
         // Trigger blissify init
-        document.getElementById('blissify-init-button').addEventListener('click', function() {
+        document.getElementById('blissify-init-button').addEventListener('click', function () {
             const eventSource = new EventSource('/start-analysis');
 
-            eventSource.onmessage = function(event) {
+            eventSource.onmessage = function (event) {
+                // Ajouter le nouveau contenu sans écraser l'ancien
                 document.getElementById('console-output').innerText += event.data + '\n';
             };
 
-            eventSource.onerror = function(event) {
-                document.getElementById('console-output').innerText += `Erreur : ${event.data}`;
+            eventSource.onerror = function (event) {
+                document.getElementById('console-output').innerText += `Erreur : ${event.data}\n`;
                 eventSource.close(); // Fermer la connexion SSE en cas d'erreur
             };
         });

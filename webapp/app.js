@@ -77,6 +77,7 @@ app.get('/mpc-update', async (req, res) => {
   }
 });
 
+// Route SSE pour lancer "blissify init"
 app.get('/start-analysis', (req, res) => {
   const command = 'blissify init /mnt/Musique';
   const analysisProcess = spawn('sh', ['-c', command]);
@@ -85,15 +86,17 @@ app.get('/start-analysis', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders();
+  res.flushHeaders();  // Forcer l'envoi des headers
 
   // Diffuser la sortie en temps réel via SSE
   analysisProcess.stdout.on('data', (data) => {
       res.write(`data: ${data.toString()}\n\n`);
+      res.flush(); // Vidage immédiat après chaque ligne envoyée
   });
 
   analysisProcess.stderr.on('data', (data) => {
       res.write(`data: ${data.toString()}\n\n`);
+      res.flush(); // Vidage immédiat après chaque ligne d'erreur
   });
 
   analysisProcess.on('close', (code) => {
@@ -102,9 +105,10 @@ app.get('/start-analysis', (req, res) => {
       } else {
           res.write(`data: Blissify init exécuté avec succès\n\n`);
       }
-      res.end(); // Fermer la connexion après la fin du processus
+      res.flush(); // Forcer l'envoi final
+      res.end();   // Terminer la connexion après l'exécution
   });
-}); 
+});
 
 // Blissify update
 app.get('/blissify-update', async (req, res) => {
