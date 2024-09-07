@@ -1,0 +1,13 @@
+version: '3'
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./webapp:/usr/src/app  # Monte ton dossier local dans le conteneur
+    ports:
+      - "3000:3000"  # Expose le port de ton application Node.js
+    environment:
+      NODE_ENV: development  # Mode développement pour auto-reload si nécessaire
+    command: npm run dev  # Démarre ton application en mode développement
