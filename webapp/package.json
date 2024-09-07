@@ -4,7 +4,8 @@
     "description": "Web app for managing and uploading song.db to Volumio",
     "main": "app.js",
     "scripts": {
-      "start": "node app.js"
+      "start": "node app.js",
+      "dev": "nodemon server.js"
     },
     "dependencies": {
       "express": "^4.17.3",
