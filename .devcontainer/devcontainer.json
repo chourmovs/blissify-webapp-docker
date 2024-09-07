@@ -1,0 +1,12 @@
+{
+  "name": "Node.js Development",
+  "context": "..",
+  "dockerFile": "Dockerfile",
+  "runArgs": ["--rm"],
+  "service": "webapp",
+  "workspaceFolder": "/usr/src/app",
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ]
+}
