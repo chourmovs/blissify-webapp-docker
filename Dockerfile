@@ -32,7 +32,8 @@ RUN mkdir -p /mnt/Musique
 
 # Installer uniquement les dépendances nécessaires à l'exécution
 RUN apt-get update && apt-get install -y \
-    openssh-client ffmpeg mpd mpc expect 
+    openssh-client ffmpeg mpd mpc expect \
+    curl npm nodejs
 #    libavutil-dev libavformat-dev expect\
 #    libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev 
 RUN curl nodejs npm  # Ajoute Node.js et npm
