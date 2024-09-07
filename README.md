@@ -2,7 +2,7 @@
 webapp for blissify RS
 
 # Prerequisite
-x86 PC running
+x86 PC running any docker capable OS
 
 # Install
 Install docker for your system
