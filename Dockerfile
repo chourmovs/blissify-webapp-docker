@@ -32,9 +32,10 @@ RUN mkdir -p /mnt/Musique
 
 # Installer uniquement les dépendances nécessaires à l'exécution
 RUN apt-get update && apt-get install -y \
-    openssh-client ffmpeg mpd mpc \
-    libavutil-dev libavformat-dev expect\
-    libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev 
+    openssh-client ffmpeg mpd mpc 
+#    libavutil-dev libavformat-dev expect\
+#    libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev 
+
 # Copier l'exécutable compilé depuis l'étape de build
 COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 
@@ -42,12 +43,9 @@ COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 WORKDIR /app/webapp
 COPY ./webapp /app/webapp
 
-# Installer Node.js et les dépendances de la webapp
-RUN apt-get install -y nodejs npm
 # Installer les dépendances, y compris nodemon en dev
-RUN npm install --only=development
-
-RUN npm install
+RUN npm install --only=development  # Installe nodemon et autres dépendances dev
+RUN npm install  # Installe les autres dépendances
 
 # Configuration des locales
 USER root
