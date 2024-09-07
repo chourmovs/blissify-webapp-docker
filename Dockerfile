@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y \
     curl npm nodejs
 #    libavutil-dev libavformat-dev expect\
 #    libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev 
-RUN curl nodejs npm  # Ajoute Node.js et npm
+#RUN curl nodejs npm  # Ajoute Node.js et npm
 
 # Copier l'exécutable compilé depuis l'étape de build
 COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
