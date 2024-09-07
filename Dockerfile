@@ -44,6 +44,9 @@ COPY ./webapp /app/webapp
 
 # Installer Node.js et les dépendances de la webapp
 RUN apt-get install -y nodejs npm
+# Installer les dépendances, y compris nodemon en dev
+RUN npm install --only=development
+
 RUN npm install
 
 # Configuration des locales
