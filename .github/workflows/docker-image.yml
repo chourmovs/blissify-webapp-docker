@@ -3,10 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Trigger the workflow on pushes to the main branch
-  #pull_request:
-   # branches:
-      - main  # Trigger the workflow on pull requests to the main branch
+      - main  # Déclenche le workflow sur les push vers la branche principale
   schedule:
     - cron: '0 0 * * 1'  # Déclenche le workflow chaque lundi à minuit UTC
     
@@ -26,6 +23,10 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Clone webapp repository
+      run: |
+        git clone https://${{ secrets.GH_PAT }}@github.com/chourmovs/webapp.git /path/to/clone/webapp
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
