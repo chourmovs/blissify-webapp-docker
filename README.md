@@ -5,8 +5,9 @@ webapp for blissify RS
 x86 PC running any docker capable OS
 
 # Install
-Install docker for your system
-launch the command docher run -it --priviledge -p 3000:3000 chourmovs/blissify-webapp:latest
+1) Install docker for your system<p>
+2) launch the command:<p> 
+<em>docher run -it --priviledge -p 3000:3000 chourmovs/blissify-webapp:latest</em>
 
 # Usage
 when container is running access http://locahost:3000
