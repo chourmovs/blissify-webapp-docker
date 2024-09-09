@@ -26,8 +26,7 @@ jobs:
 
     - name: Clone webapp repository
       run: |
-        mkdir -p /home/runner/work/blissify-webapp/blissify-webapp/app/webapp
-        git clone https://${{ secrets.GH_PAT }}@github.com/chourmovs/webapp.git /app/webapp
+        git clone https://${{ secrets.GH_PAT }}@github.com/chourmovs/webapp.git ./webapp
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
