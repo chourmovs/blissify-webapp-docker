@@ -24,15 +24,12 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Clean up existing webapp directory
-      run: |
-        if [ -d ./webapp ]; then
-        rm -rf ./webapp
-        fi
-
     - name: Clone webapp repository
       run: |
-        git clone https://${{ secrets.GH_PAT }}@github.com/chourmovs/webapp.git ./webapp
+
+        curl -L -o ./webapp/app.js https://raw.githubusercontent.com/chourmovs/blissify-webapp/main/app.js
+        curl -L -o ./webapp/public/index.html https://raw.githubusercontent.com/chourmovs/blissify-webapp/main/public/index.html
+      
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
