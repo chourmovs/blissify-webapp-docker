@@ -11,6 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 const { spawn } = require('child_process');
 const compression = require('compression');
+const fs = require('fs');
 
 app.use(compression());
 
@@ -117,29 +118,66 @@ app.get('/start-analysis', (req, res) => {
 
 // Blissify update
 app.get('/blissify-update', async (req, res) => {
-  try {
-    const updateProcess = spawn('blissify', ['update']);
-    let output = '';
-    updateProcess.stdout.on('data', (data) => {
-      output += data.toString();
-      res.write(data); // Send data chunks to the client
-    });
+  const command = 'unbuffer blissify update';  // Utilisez unbuffer pour forcer la sortie immédiate
+  const analysisProcess = spawn('sh', ['-c', command]);
 
-    updateProcess.stderr.on('data', (data) => {
-      output += data.toString();
-      console.error(`Blissify stderr: ${data}`);
-    });
+  // Headers pour SSE
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();  // Forcer l'envoi immédiat des headers
 
-    await new Promise((resolve) => {
-      updateProcess.on('close', resolve);
+  // Capturer les données de sortie
+  analysisProcess.stdout.on('data', (data) => {
+    const output = data.toString().split('\n');
+    output.forEach(line => {
+      if (line.trim()) {
+        res.write(`data: ${line.trim()}\n\n`);
+        res.flush(); // Assurer l'envoi immédiat
+      }
     });
+  });
 
-    res.end(`Blissify updated successfully:\n${output}`);
-  } catch (error) {
-    console.error('Blissify update command failed:', error);
-    res.status(500).send('Error updating Blissify');
-  }
+  // Capturer les erreurs
+  analysisProcess.stderr.on('data', (data) => {
+    res.write(`data: Erreur: ${data.toString()}\n\n`);
+    res.flush(); // Forcer l'envoi immédiat des erreurs
+  });
+
+  // Quand le processus est terminé
+  analysisProcess.on('close', (code) => {
+    res.write(`data: Blissify terminé avec le code ${code}\n\n`);
+    res.end(); // Fin du flux
+  });
 });
+
+app.get('/check-file-exists', (req, res) => {
+  const filePath = '/root/.local/share/bliss-rs/song.db'; // Remplacez par le chemin de votre fichier
+
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      // Afficher un message de journalisation si le fichier n'existe pas
+      console.log('Le fichier ' + filePath + ' n\'existe pas.');
+      res.json({ exists: false });
+    } else {
+      // Afficher un message de journalisation si le fichier existe
+      console.log('Le fichier ' + filePath + ' existe.');
+      res.json({ exists: true });
+    }
+  });
+});
+
+app.get('/stop-analysis', (req, res) => {
+  const command = 'pgrep blissify | xargs -r /bin/kill -15';
+  const stopProcess = spawn('sh', ['-c', command], { detached: true });
+
+  stopProcess.on('close', (code) => {
+    console.log(`Blissify process stopped with code ${code}`);
+    res.send('Blissify process stopped');
+  });
+});
+
+
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
