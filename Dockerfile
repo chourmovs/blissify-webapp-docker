@@ -45,6 +45,9 @@ COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 WORKDIR /app/webapp
 # COPY ./webapp /app/webapp
 
+# Vérifier la connexion à GitHub
+RUN git ls-remote https://github.com/chourmovs/webapp.git
+
 ARG GH_PAT
 RUN git clone https://$GH_PAT@github.com/chourmovs/webapp.git /app/webapp
 
