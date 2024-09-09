@@ -19,6 +19,7 @@ mpd
 # Démarrer l'application web
 echo "Starting web application..."
 # Ajoutez ici les commandes pour démarrer votre application web
+ls /app/webapp
 node /app/webapp/app.js
 # Exécuter la commande passée en argument, s'il y en a
 exec "$@"
