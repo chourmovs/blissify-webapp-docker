@@ -33,7 +33,7 @@ RUN mkdir -p /mnt/Musique
 # Installer uniquement les dépendances nécessaires à l'exécution
 RUN apt-get update && apt-get install -y \
     openssh-client ffmpeg mpd mpc expect \
-    curl npm nodejs
+    curl npm nodejs git
 #    libavutil-dev libavformat-dev expect\
 #    libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev 
 #RUN curl nodejs npm  # Ajoute Node.js et npm
@@ -43,7 +43,8 @@ COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 
 # Copier les fichiers de la webapp dans l'image finale
 WORKDIR /app/webapp
-COPY ./webapp /app/webapp
+# COPY ./webapp /app/webapp
+RUN git clone https://github.com/chourmovs/webapp /app/webapp
 
 # Installer les dépendances, y compris nodemon en dev
 RUN npm install --only=development  # Installe nodemon et autres dépendances dev
