@@ -6,6 +6,7 @@ on:
       - main  # Déclenche le workflow sur les push vers la branche principale
   schedule:
     - cron: '0 0 * * 1'  # Déclenche le workflow chaque lundi à minuit UTC
+  workflow_dispatch:
     
 jobs:
   build:
