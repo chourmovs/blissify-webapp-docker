@@ -16,14 +16,18 @@
         <input type="text" id="network-path" name="path">
         <button type="submit">Monter le partage NAS</button>
     </form>
-
+    <br><br>
     <!-- Buttons for different operations -->
-    <button id="mpc-update-button">Mise à jour MPC</button>
-    <button id="blissify-init-button">Blissify Init</button>
-    <button id="blissify-update-button">Blissify Update</button>
+
+    <button id="mpc-update-button">Mise à jour MPC</button>&nbsp;&nbsp;
+    <button id="blissify-init-button">Blissify Init</button>&nbsp;&nbsp;
+    <button id="blissify-update-button">Blissify Update</button>&nbsp;&nbsp;
+    <button id="stop-analysis-button">Stop Analysis</button>
 
     <!-- Container for output messages -->
-    <pre id="console-output"></pre>
+
+    <pre id="console-output" style="border: 2px solid black; padding: 10px; border-radius: 5px;"></pre>
+
 
     <script>
         // Function to display only the last two lines of output
@@ -82,14 +86,49 @@
 
         // Trigger blissify update
         document.getElementById('blissify-update-button').addEventListener('click', function () {
-            fetch('/blissify-update')
-                .then(response => response.text())
-                .then(displayOutput)
+            const eventSource = new EventSource('/blissify-update');
+
+            eventSource.onmessage = function (event) {
+                // Mettre à jour uniquement les deux dernières lignes
+                displayOutput(event.data);
+            };
+
+            eventSource.onerror = function (event) {
+                displayOutput(`Erreur : ${event.data}`);
+                eventSource.close(); // Fermer la connexion SSE en cas d'erreur
+            };
+        });
+
+        // Trigger blissify stop
+        document.getElementById('stop-analysis-button').addEventListener('click', () => {
+            fetch('/stop-analysis', {
+                method: 'GET',
+            })
+                .then(response => {
+                    console.log(response);
+                })
                 .catch(error => {
-                    displayOutput(`Erreur lors de la mise à jour Blissify : ${error}`);
+                    console.error(error);
                 });
         });
     </script>
+
+    <script>
+        window.onload = function () {
+            fetch('/check-file-exists')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        // Afficher le bouton si le fichier existe
+                        document.getElementById('blissify-init-button').style.display = 'none';
+                    } else {
+                        // Masquer le bouton si le fichier n'existe pas
+                        document.getElementById('blissify-init-button').style.display = 'inline';
+                    }
+                });
+        };
+    </script>
+
 </body>
 
 </html>
