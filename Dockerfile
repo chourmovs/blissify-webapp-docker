@@ -46,10 +46,10 @@ WORKDIR /app/webapp
 # COPY ./webapp /app/webapp
 
 # Vérifier la connexion à GitHub
-RUN git ls-remote https://github.com/chourmovs/webapp.git
+# RUN git ls-remote https://github.com/chourmovs/webapp.git
 
-ARG GH_PAT
-RUN git clone https://$GH_PAT@github.com/chourmovs/webapp.git /app/webapp
+ARG ARG GITHUB_TOKEN
+RUN git clone https://$GITHUB_TOKEN@github.com/chourmovs/webapp.git /app/webapp
 
 # Installer les dépendances, y compris nodemon en dev
 RUN npm install --only=development  # Installe nodemon et autres dépendances dev
