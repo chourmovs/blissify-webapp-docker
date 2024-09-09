@@ -45,12 +45,6 @@ COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 WORKDIR /app/webapp
 # COPY ./webapp /app/webapp
 
-# Vérifier la connexion à GitHub
-# RUN git ls-remote https://github.com/chourmovs/webapp.git
-
-ARG ARG GITHUB_TOKEN
-RUN git clone https://$GITHUB_TOKEN@github.com/chourmovs/webapp.git /app/webapp
-
 # Installer les dépendances, y compris nodemon en dev
 RUN npm install --only=development  # Installe nodemon et autres dépendances dev
 RUN npm install  # Installe les autres dépendances
