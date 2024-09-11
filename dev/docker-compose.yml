@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+
+  webapp:
+
+    image: chourmovs/blissify-webapp:latest  # Utilise ton image pré-construite
+
+    privileged: true
+
+    volumes:
+
+      #- ./webapp:/app:rw  # Monte ton dossier de développement local dans le conteneur
+
+      - ./webapp:/root/.local
+      - ./webapp:/var/lib/mpd
+      
+
+    working_dir: /app/webapp
+
+    ports:
+
+      - "3000:3000"  # Expose le port de ton application Node.js
+
+    environment:
+
+       NODE_ENV: development  # En mode développement
+
+    command: /app/start.sh && npm run dev  # Démarre ton application en mode dev (nodemon)
