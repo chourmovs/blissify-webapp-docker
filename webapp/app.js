@@ -11,7 +11,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 const { spawn } = require('child_process');
 const compression = require('compression');
-const fs = require('fs');
+const fs = require('fs').promises;
+
 
 app.use(compression());
 
@@ -151,20 +152,18 @@ app.get('/blissify-update', async (req, res) => {
   });
 });
 
-app.get('/check-file-exists', (req, res) => {
-  const filePath = '/root/.local/share/bliss-rs/song.db'; // Remplacez par le chemin de votre fichier
+app.get('/check-file-exists', async (req, res) => {
+  const filePath = path.resolve('/root/.local/share/bliss-rs/songs.db'); // Remplacez par le chemin de votre fichier
 
-  fs.access(filePath, fs.constants.F_OK, (err) => {
-    if (err) {
-      // Afficher un message de journalisation si le fichier n'existe pas
-      console.log('Le fichier ' + filePath + ' n\'existe pas.');
-      res.json({ exists: false });
-    } else {
-      // Afficher un message de journalisation si le fichier existe
-      console.log('Le fichier ' + filePath + ' existe.');
-      res.json({ exists: true });
-    }
-  });
+  try {
+    await fs.access(filePath);
+    console.log('Le fichier ' + filePath + ' existe.');
+    res.json({ exists: true });
+  } catch (err) {
+    console.log('Le fichier ' + filePath + ' n\'existe pas.');
+    console.error('Erreur lors de la vérification du fichier:', err);
+    res.json({ exists: false });
+  }
 });
 
 app.get('/stop-analysis', (req, res) => {
