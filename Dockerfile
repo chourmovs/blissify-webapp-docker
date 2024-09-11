@@ -68,7 +68,7 @@ RUN truncate -s 0 /etc/mpd.conf \
     && echo 'filesystem_charset "UTF8"' >> /etc/mpd.conf \
     && echo 'music_directory "/mnt/Musique"' >> /etc/mpd.conf \
     && echo 'playlist_directory "/var/lib/mpd/playlists"' >> /etc/mpd.conf \
-    && echo 'db_file "/var/lib/mpd.db"' >> /etc/mpd.conf \
+    && echo 'db_file "/var/lib/mpd/mpd.db"' >> /etc/mpd.conf \
     && echo 'log_file "/var/log/mpd/mpd.log"' >> /etc/mpd.conf \
     && echo 'pid_file "/var/run/mpd/mpd.pid"' >> /etc/mpd.conf \
     && echo 'state_file "/var/lib/mpd/state"' >> /etc/mpd.conf \
