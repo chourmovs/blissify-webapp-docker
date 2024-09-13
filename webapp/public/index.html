@@ -24,8 +24,10 @@
     <button id="blissify-update-button">Blissify Update</button>&nbsp;&nbsp;
     <button id="stop-analysis-button">Stop Analysis</button>
 
-    <!-- Container for output messages -->
+    <!-- Add a placeholder for the success message -->
+    <p id="success-message" class="success-message"></p>
 
+    <!-- Container for output messages -->
     <pre id="console-output" style="border: 2px solid black; padding: 10px; border-radius: 5px;"></pre>
 
 
@@ -129,6 +131,34 @@
         };
     </script>
 
+<script>
+    // Previous JavaScript code (asynchronous API calls, event listeners, etc.)
+
+    // Function to display the success message
+    function displaySuccessMessage(message) {
+        const successElement = document.getElementById('success-message');
+        successElement.innerText = message;
+    }
+
+    // Check if the network path has been successfully mounted on page load
+    const checkMountedNetworkPath = async () => {
+        try {
+            const response = await fetch('/check-mounted');
+            const data = await response.text();
+
+            if (data.trim() === 'mounted') {
+                displaySuccessMessage('The shared directory has been mounted successfully.');
+            }
+        } catch (error) {
+            console.error('Error checking mounted network path:', error);
+        }
+    };
+
+    // Call the checkMountedNetworkPath function
+    checkMountedNetworkPath().catch((error) => {
+        console.error('checkMountedNetworkPath():', error);
+    });
+</script>
 </body>
 
 </html>
