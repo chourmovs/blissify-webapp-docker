@@ -4,7 +4,7 @@ services:
 
   webapp:
 
-    image: chourmovs/blissify-webapp-docker:dev  # Utilise ton image pré-construite
+    image: chourmovs/blissify-webapp:dev  # Utilise ton image pré-construite
 
     privileged: true
 
