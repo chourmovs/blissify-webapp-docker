@@ -4,7 +4,7 @@ services:
 
   webapp:
 
-    image: chourmovs/blissify-webapp:latest  # Utilise ton image pré-construite
+    image: chourmovs/blissify-webapp-docker:dev  # Utilise ton image pré-construite
 
     privileged: true
 
@@ -26,4 +26,4 @@ services:
 
        NODE_ENV: development  # En mode développement
 
-    command: /app/start.sh && npm run dev  # Démarre ton application en mode dev (nodemon)
+    command: /app/start.sh  # Démarre ton application en mode dev (nodemon)
