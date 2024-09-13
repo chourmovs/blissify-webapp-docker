@@ -3,14 +3,16 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Trigger the workflow on pushes to the main branch
-  #pull_request:
-   # branches:
-      - main  # Trigger the workflow on pull requests to the main branch
+      - dev  # Déclencher sur push vers la branche dev
+      - main # Déclencher sur push vers la branche main
+  pull_request:
+    branches:
+     - dev  # Déclencher sur pull request vers la branche dev
+     - main # Déclencher sur pull request vers la branche main
   schedule:
-    - cron: '0 0 * * 1'  # Déclenche le workflow chaque lundi à minuit UTC
+    - cron: '0 0 * * 1'  # Déclencher chaque lundi à minuit UTC
   workflow_dispatch:
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,12 +30,26 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: Set Docker tag based on branch
+      id: docker_tag
+      run: |
+        if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          echo "Tagging Docker image as latest"
+          echo "::set-output name=tag::latest"
+        elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+          echo "Tagging Docker image as dev"
+          echo "::set-output name=tag::dev"
+        else
+          echo "Branch not supported!"
+          exit 1
+        fi
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: chourmovs/blissify-webapp:latest
+        tags: chourmovs/blissify-webapp:${{ steps.docker_tag.outputs.tag }}
         cache-from: type=registry,ref=chourmovs/blissify-webapp:cache
         cache-to: type=registry,ref=chourmovs/blissify-webapp:cache,mode=max
 

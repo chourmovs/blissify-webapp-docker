@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y \
 # Copier l'exécutable compilé depuis l'étape de build
 COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 
-# Copier les fichiers de la webapp dans l'image finale
+# Copier les fichiers du depot pour le dev
 WORKDIR /dev
 COPY . /dev
 
