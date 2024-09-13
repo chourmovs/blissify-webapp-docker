@@ -42,14 +42,14 @@ RUN apt-get update && apt-get install -y \
 COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 
 # Copier les fichiers du depot pour le dev
-WORKDIR /devapp
-COPY . /devapp
+#WORKDIR /devapp
+#COPY . /devapp
 
 # Copier les fichiers de la webapp dans l'image finale
+WORKDIR /app
+COPY . /app
+
 WORKDIR /app/webapp
-COPY ./webapp /app/webapp
-
-
 
 
 # Installer les dépendances, y compris nodemon en dev
