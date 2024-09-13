@@ -11,8 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 const { spawn } = require('child_process');
 const compression = require('compression');
-//const fs = require('fs').promises;
-const fs = require("fs");
+const fs = require('fs').promises;
 
 
 app.use(compression());
@@ -31,8 +30,6 @@ app.get('/mount-nas', async (req, res) => {
   }
 
   try {
-    // Save network path to a configuration file
-    await fs.promises.writeFile('/var/lib/mpd/network_path.conf', networkPath);
     const mountCommand = `mount -t cifs -o username=chourmovs,password='3$*ES3KSu4tYtX',file_mode=0777,dir_mode=0777,rw ${networkPath} /mnt/Musique`;
     const mountProcess = spawn('sh', ['-c', mountCommand]);
 
@@ -169,21 +166,6 @@ app.get('/check-file-exists', async (req, res) => {
   }
 });
 
-app.get("/check-mounted", async (req, res) => {
-  try {
-    const stat = await fs.promises.stat("/mnt/NAS");
-    res.send("mounted");
-  } catch (error) {
-    // Handle the case when the directory is not mounted
-    if (error.code === "ENOENT") {
-      res.send("not_mounted");
-    } else {
-      console.error("Error checking the mounted state of the shared directory", error);
-      res.sendStatus(500);
-    }
-  }
-});
-
 app.get('/stop-analysis', (req, res) => {
   const command = 'pgrep blissify | xargs -r /bin/kill -15';
   const stopProcess = spawn('sh', ['-c', command], { detached: true });
@@ -196,54 +178,6 @@ app.get('/stop-analysis', (req, res) => {
 
 
 
-
-app.post("/save-config", async (req, res) => {
-  try {
-    const sharedPath = req.body.path_to_share;
-    const data = JSON.stringify({ path_to_share: sharedPath }, null, 2);
-
-    const configPath = "/var/lib/mpd/network_path.conf";
-    await fs.promises.writeFile(configPath, data);
-
-    res.status(200).send("Configuration saved successfully");
-  } catch (error) {
-    console.error("Error saving configuration", error);
-    res.sendStatus(500);
-  }
-});
-
-
-// Persistently check and mount the network path from the configuration file when the application starts
-mountNetworkPathIfExists().catch((error) => {
-  console.error('mountNetworkPathIfExists():', error);
-});
-
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
-
-
-
-
-async function mountNetworkPathIfExists() {
-  try {
-    const configPath = path.resolve("/var/lib/mpd/network_path.conf");
-    const networkPath = (await fs.readFile(configPath)).toString().trim();
-
-    if (networkPath) {
-      fs.access(networkPath, fs.constants.R_OK)
-        .then(() => {
-          return fs.cpfs(networkPath, "/mnt/NAS", {
-            options: ["-o", "vers=3.0,ro"],
-          });
-        })
-        .catch(() => {
-          console.error("Failed to mount network path. Please check the path.");
-        });
-    }
-  } catch (err) {
-    console.error("Error reading the configuration file to mount the network path", err);
-    // You can display an error message on the front end
-    console.error("Error: Unable to find the configuration file located at /var/lib/mpd/network_path.conf.");
-  }
-}
