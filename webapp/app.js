@@ -30,6 +30,8 @@ app.get('/mount-nas', async (req, res) => {
   }
 
   try {
+    // Save network path to a configuration file
+    await fs.promises.writeFile('/var/lib/mpd/network_path.conf', networkPath);
     const mountCommand = `mount -t cifs -o username=chourmovs,password='3$*ES3KSu4tYtX',file_mode=0777,dir_mode=0777,rw ${networkPath} /mnt/Musique`;
     const mountProcess = spawn('sh', ['-c', mountCommand]);
 
@@ -166,6 +168,16 @@ app.get('/check-file-exists', async (req, res) => {
   }
 });
 
+app.get('/check-mounted', (req, res) => {
+  fs.access('/mnt/NAS', fs.constants.F_OK, (err) => {
+    if (err) {
+      res.send('not_mounted');
+    } else {
+      res.send('mounted');
+    }
+  });
+});
+
 app.get('/stop-analysis', (req, res) => {
   const command = 'pgrep blissify | xargs -r /bin/kill -15';
   const stopProcess = spawn('sh', ['-c', command], { detached: true });
@@ -176,7 +188,41 @@ app.get('/stop-analysis', (req, res) => {
   });
 });
 
+async function mountNetworkPathIfExists() {
+  try {
+    const networkPath = await fs.promises.readFile('/var/lib/mpd/network_path.conf', 'utf8');
 
+    if (networkPath && networkPath.trim() !== '') {
+      const mountCommand = `mount -t cifs -o username=chourmovs,password='3$*ES3KSu4tYtX',file_mode=0777,dir_mode=0777,rw ${networkPath} /mnt/Musique`;
+      const mountProcess = spawn('sh', ['-c', mountCommand]);
+
+      let output = '';
+
+      mountProcess.stdout.on('data', (data) => {
+        output += data.toString();
+        console.log(`Mount stdout: ${data}`);
+      });
+
+      mountProcess.stderr.on('data', (data) => {
+        output += data.toString();
+        console.error(`Mount stderr: ${data}`);
+      });
+
+      await new Promise((resolve) => {
+        mountProcess.on('close', resolve);
+      });
+
+      console.log(`Network path mounted successfully: ${output}`);
+    }
+  } catch (error) {
+    console.error('Error reading and mounting network path from the configuration file:', error);
+  }
+}
+
+// Persistently check and mount the network path from the configuration file when the application starts
+mountNetworkPathIfExists().catch((error) => {
+  console.error('mountNetworkPathIfExists():', error);
+});
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
