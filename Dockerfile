@@ -49,7 +49,7 @@ COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 WORKDIR /app
 COPY . /app
 
-WORKDIR /app/webapp
+#WORKDIR /app/webapp
 
 
 # Installer les dépendances, y compris nodemon en dev
