@@ -49,7 +49,7 @@ COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 WORKDIR /app
 COPY . /app
 
-#WORKDIR /app/webapp
+WORKDIR /app/webapp
 
 
 # Installer les dépendances, y compris nodemon en dev
@@ -82,6 +82,8 @@ RUN truncate -s 0 /etc/mpd.conf \
     && echo 'sticker_file "/var/lib/mpd/sticker.sql"' >> /etc/mpd.conf \
     && echo 'bind_to_address "0.0.0.0"' >> /etc/mpd.conf \
     && echo 'port "6600"' >> /etc/mpd.conf
+
+WORKDIR /app
 
 # Exposer le port 3000
 EXPOSE 3000
