@@ -3,10 +3,10 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Trigger the workflow on pushes to the main branch
+      - dev  # Trigger the workflow on pushes to the main branch
   #pull_request:
    # branches:
-      - main  # Trigger the workflow on pull requests to the main branch
+      - dev  # Trigger the workflow on pull requests to the main branch
   schedule:
     - cron: '0 0 * * 1'  # Déclenche le workflow chaque lundi à minuit UTC
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: chourmovs/blissify-webapp:latest
+        tags: chourmovs/blissify-webapp:dev
         cache-from: type=registry,ref=chourmovs/blissify-webapp:cache
         cache-to: type=registry,ref=chourmovs/blissify-webapp:cache,mode=max
 
