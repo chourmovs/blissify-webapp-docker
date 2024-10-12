@@ -35,9 +35,7 @@ RUN chmod -R 777 /mnt/Musique
 RUN apt-get update && apt-get install -y \
     openssh-client ffmpeg mpd mpc expect \
     curl npm nodejs
-#    libavutil-dev libavformat-dev expect\
-#    libavfilter-dev libavdevice-dev libclang-dev libsqlite3-dev 
-#RUN curl nodejs npm  # Ajoute Node.js et npm
+
 
 # Copier l'exécutable compilé depuis l'étape de build
 COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
@@ -55,6 +53,7 @@ WORKDIR /app/webapp
 
 # Installer les dépendances, y compris nodemon en dev
 RUN npm install --only=development  # Installe nodemon et autres dépendances dev
+RUN npm install -g nodemon
 RUN npm install  # Installe les autres dépendances
 
 # Configuration des locales
