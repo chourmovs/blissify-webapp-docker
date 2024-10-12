@@ -25,7 +25,7 @@ RUN git clone https://github.com/Polochon-street/blissify-rs.git .
 RUN cargo build --release
 
 # Étape 2 : Créer l'image finale minimale
-FROM ubuntu:latest
+ FROM python:3.9
 
 # Créer le répertoire de montage
 RUN mkdir -p /mnt/Musique
