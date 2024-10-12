@@ -55,9 +55,10 @@ RUN npm install -g nodemon
 RUN npm install  # Installe les autres dépendances
 # Install Python
 RUN apt-get update && apt-get install -y python3 python3-pip
-RUN python3 -m venv .venv
+
 WORKDIR /app
-RUN source .venv/bin/activate
+RUN python3 -m venv .venv
+RUN . .venv/bin/activate
 RUN pip install streamlit
 WORKDIR /app/webapp
 
