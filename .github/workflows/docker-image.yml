@@ -41,7 +41,7 @@ jobs:
         elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
           echo "Tagging Docker image as dev"
           echo "::set-output name=tag::dev"
-        elif [ "${{ github.ref }}" == "refs/heads/alpha" ]; then
+        elif [ "${{ github.ref }}" == "refs/heads/streampy" ]; then
           echo "Tagging Docker image as alpha"
           echo "::set-output name=tag::alpha"
         else
