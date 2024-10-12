@@ -53,6 +53,11 @@ WORKDIR /app/webapp
 RUN npm install --only=development  # Installe nodemon et autres dépendances dev
 RUN npm install -g nodemon
 RUN npm install  # Installe les autres dépendances
+# Install Python
+RUN apt-get update && apt-get install -y python3
+# Install pip
+RUN python3 -m ensurepip
+
 RUN pip install streamlit
 
 # Configuration des locales
