@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   webapp:
@@ -7,20 +7,22 @@ services:
 
     volumes:
       # Monte ton dossier de développement local dans le conteneur (à ajuster selon tes besoins)
-      - C:/Users/chour/webappdev:/app
-      - C:/Users/chour/webapp:/root/.local  # Monte le répertoire local dans /root/.local du conteneur
-      - C:/Users/chour/webapp:/var/lib/mpd  # Monte le répertoire local dans /var/lib/mpd du conteneur
+      - /app/webapp:/home/portainer/blissify/webapp:rw
+      - /root/.local:/home/portainer/blissify:rw  # Monte le répertoire local dans /root/.local du conteneur
+      - /var/lib/mpd:/home/portainer/blissify:rw  # Monte le répertoire local dans /var/lib/mpd du conteneur
 
-    working_dir: /app/webapp
+    working_dir: /app
 
     ports:
       - "3000:3000"  # Expose le port de ton application Node.js
 
     environment:
-      NODE_ENV: development  # En mode développement
+      #NODE_ENV: development  # En mode développement
+      PUID: 1000
+      PGID: 1000
 
-    entrypoint: ["/bin/sh","-c"]
-    command:
-    - |
-       mpd
-       npm run dev
+    #entrypoint: ["/bin/sh","-c"]
+    #command:
+    #-
+    #   mpd
+    #   npm run dev
