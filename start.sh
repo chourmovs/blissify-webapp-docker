@@ -19,7 +19,7 @@ mpd
 # Démarrer l'application web
 echo "Starting web application..."
 # Ajoutez ici les commandes pour démarrer votre application web
-cd /webapp
+cd webapp
 ls
 streamlit run streamlit.py
 #nodemon /app/webapp/app.js
