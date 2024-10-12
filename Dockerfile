@@ -83,7 +83,8 @@ RUN truncate -s 0 /etc/mpd.conf \
     && echo 'bind_to_address "0.0.0.0"' >> /etc/mpd.conf \
     && echo 'port "6600"' >> /etc/mpd.conf
 
-WORKDIR /app
+#WORKDIR /app/webapp
+
 
 # Exposer le port 3000
 EXPOSE 3000
