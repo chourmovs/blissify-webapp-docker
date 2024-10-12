@@ -45,9 +45,10 @@ COPY --from=build /app/target/release/blissify /usr/local/bin/blissify
 #COPY . /devapp
 
 # Copier les fichiers de la webapp dans l'image finale
-WORKDIR /app/webapp
+WORKDIR /app
 COPY . /app
 
+WORKDIR /app/webapp
 # Installer les dépendances, y compris nodemon en dev
 RUN npm install --only=development  # Installe nodemon et autres dépendances dev
 RUN npm install -g nodemon
