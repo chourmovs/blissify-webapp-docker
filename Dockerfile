@@ -55,6 +55,8 @@ RUN npm install -g nodemon
 RUN npm install  # Installe les autres dépendances
 # Install Python
 RUN apt-get update && apt-get install -y python3 python3-pip
+RUN python -m venv .venv
+RUN source .venv/bin/activate
 RUN pip install streamlit
 
 # Configuration des locales
