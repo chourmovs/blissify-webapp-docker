@@ -56,7 +56,7 @@ RUN npm install  # Installe les autres dépendances
 # Install Python
 RUN apt-get update && apt-get install -y python3
 # Install pip
-RUN python3 -m ensurepip
+RUN python3 -m pip install --upgrade pip
 
 RUN pip install streamlit
 
