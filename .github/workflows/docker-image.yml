@@ -3,12 +3,14 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - dev  # Déclencher sur push vers la branche dev
-      - main # Déclencher sur push vers la branche main
+     # - dev  # Déclencher sur push vers la branche dev
+     # - main # Déclencher sur push vers la branche main
+      - alpha
   pull_request:
     branches:
-     - dev  # Déclencher sur pull request vers la branche dev
-     - main # Déclencher sur pull request vers la branche main
+     #- dev  # Déclencher sur pull request vers la branche dev
+     #- main # Déclencher sur pull request vers la branche main
+     - alpha
   schedule:
     - cron: '0 0 * * 1'  # Déclencher chaque lundi à minuit UTC
   workflow_dispatch:
