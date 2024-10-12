@@ -29,6 +29,7 @@ FROM ubuntu:latest
 
 # Créer le répertoire de montage
 RUN mkdir -p /mnt/Musique
+RUN chmod -R 777 /mnt/Musique
 
 # Installer uniquement les dépendances nécessaires à l'exécution
 RUN apt-get update && apt-get install -y \
