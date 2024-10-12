@@ -19,7 +19,7 @@ mpd
 # Démarrer l'application web
 echo "Starting web application..."
 # Ajoutez ici les commandes pour démarrer votre application web
-nodemon /app/webapp/app.js
+# nodemon /app/webapp/app.js
 # Exécuter la commande passée en argument, s'il y en a
 exec "$@"
 
