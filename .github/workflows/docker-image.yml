@@ -41,6 +41,9 @@ jobs:
         elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
           echo "Tagging Docker image as dev"
           echo "::set-output name=tag::dev"
+        elif [ "${{ github.ref }}" == "refs/heads/alpha" ]; then
+          echo "Tagging Docker image as alpha"
+          echo "::set-output name=tag::alpha"
         else
           echo "Branch not supported!"
           exit 1
