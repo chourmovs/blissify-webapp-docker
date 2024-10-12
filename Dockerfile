@@ -53,6 +53,7 @@ WORKDIR /app/webapp
 RUN npm install --only=development  # Installe nodemon et autres dépendances dev
 RUN npm install -g nodemon
 RUN npm install  # Installe les autres dépendances
+RUN pip install streamlit
 
 # Configuration des locales
 USER root
@@ -85,6 +86,7 @@ RUN truncate -s 0 /etc/mpd.conf \
 # Exposer le port 3000
 EXPOSE 3000
 EXPOSE 6600
+EXPOSE 8501
 
 # Copier le script de démarrage
 COPY start.sh /app/start.sh
