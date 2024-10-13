@@ -12,6 +12,9 @@ if lsof -i:6600; then
     fuser -k 6600/tcp
 fi
 
+# Copy the contents of /app from the container to the host volume
+cp -r /app/* /home/portainer/blissify/webapp/
+
 # Démarrer MPD
 echo "Starting MPD..."
 mpd
