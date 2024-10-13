@@ -9,7 +9,7 @@ network_path = st.text_input("Chemin du partage NAS:")
 if st.button("Monter le partage NAS"):
     try:
         response = requests.get(f"http://localhost:3000/mount-nas?path={network_path}")
-        st.success(response.text())
+        st.success(response.text)
     except requests.exceptions.RequestException as e:
         st.error(f"Erreur lors du montage du NAS: {e}")
 
@@ -17,7 +17,7 @@ if st.button("Monter le partage NAS"):
 if st.button("Mise à jour MPC"):
     try:
         response = requests.get("http://localhost:3000/mpc-update")
-        st.write(response.text())
+        st.write(response.text)
     except requests.exceptions.RequestException as e:
         st.error(f"Erreur lors de la mise à jour MPC: {e}")
 
@@ -33,14 +33,14 @@ if st.button("Blissify Init"):
 if st.button("Blissify Update"):
     try:
         response = requests.get("http://localhost:3000/blissify-update")
-        st.write(response.text())
+        st.write(response.text)
     except requests.exceptions.RequestException as e:
         st.error(f"Erreur lors de la mise à jour Blissify: {e}")
 
 if st.button("Stop Analysis"):
     try:
         response = requests.get("http://localhost:3000/stop-analysis")
-        st.write(response.text())
+        st.write(response.text)
     except requests.exceptions.RequestException as e:
         st.error(f"Erreur lors de l'arrêt de l'analyse: {e}")
 
