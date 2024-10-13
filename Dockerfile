@@ -69,9 +69,13 @@ RUN apt-get update && apt-get install -y \
     
 RUN python3 -m pip install --upgrade pip
 WORKDIR /app
-RUN python3 -m venv .venv && \
+
+RUN python3 -m venv .venv --without-pip && \
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+    ./.venv/bin/python get-pip.py && \
     ./.venv/bin/pip install --upgrade pip && \
-    ./.venv/bin/pip install streamlit
+    ./.venv/bin/pip install streamlit && \
+    rm get-pip.py
 
 WORKDIR /app/webapp
 
