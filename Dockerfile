@@ -26,7 +26,7 @@ RUN cargo build --release
 
 
 # Étape 2 : Créer l'image finale minimale
-FROM borda/docker_python-opencv-ffmpeg:py3.9
+FROM borda/docker_python-opencv-ffmpeg
 
 # Créer le répertoire de montage
 RUN mkdir -p /mnt/Musique
