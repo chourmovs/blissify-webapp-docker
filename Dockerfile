@@ -57,28 +57,23 @@ RUN npm install --only=development  # Installe nodemon et autres dépendances de
 RUN npm install -g nodemon
 RUN npm install  # Installe les autres dépendances
 
-
-
-
-# Installer Python et ses dépendances
-RUN apt-get update && apt-get install -y \
-    python3-venv \
-    python3-dev \
-    python3-pip \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
     
-RUN python3 -m pip install --upgrade pip
 WORKDIR /app
 
-RUN python3 -m venv .venv --without-pip && \
-    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
-    ./.venv/bin/python get-pip.py && \
-    ./.venv/bin/pip install --upgrade pip && \
-    ./.venv/bin/pip install streamlit && \
-    rm get-pip.py
+# Installer Python, pip et venv
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-venv \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Créer et activer l'environnement virtuel, puis installer pip et streamlit
+RUN python3 -m venv /app/.venv && \
+    /app/.venv/bin/pip install --upgrade pip && \
+    /app/.venv/bin/pip install streamlit
+
+# Rendre l'environnement virtuel actif par défaut
+ENV PATH="/app/.venv/bin:$PATH"
+
 
 WORKDIR /app/webapp
 
