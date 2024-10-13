@@ -64,6 +64,7 @@ RUN npm install  # Installe les autres dépendances
 RUN apt-get update && apt-get install -y \
     python3-venv \
     python3-dev \
+    python3-pip \
     build-essential \
     libssl-dev \
     libffi-dev \
