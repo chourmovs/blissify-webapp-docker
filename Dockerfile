@@ -24,8 +24,9 @@ WORKDIR /app
 RUN git clone https://github.com/Polochon-street/blissify-rs.git .
 RUN cargo build --release
 
+
 # Étape 2 : Créer l'image finale minimale
-FROM borda/docker_python-opencv-ffmpeg
+FROM borda/docker_python-opencv-ffmpeg:py3.9
 
 # Créer le répertoire de montage
 RUN mkdir -p /mnt/Musique
