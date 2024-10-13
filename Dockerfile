@@ -57,9 +57,13 @@ RUN npm install  # Installe les autres dépendances
 
 
 # Installer Python et ses dépendances
-RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
+RUN apt-get update && apt-get install -y python3 python3-pip python3-venv && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+    
+RUN python3 -m pip install --upgrade pip
 WORKDIR /app
 RUN python3 -m venv .venv && \
+    ./.venv/bin/pip install --upgrade pip && \
     ./.venv/bin/pip install streamlit
 
 WORKDIR /app/webapp
