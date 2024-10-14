@@ -109,7 +109,7 @@ with col5:
 
 with col6:
     if st.button("Blissify Update", key="blissify_update_button"):
-         st.session_state.console_output = "Démarrage de l'analyse Blissify...\n"
+        st.session_state.console_output = "Démarrage de l'analyse Blissify...\n"
         sse_url = "http://localhost:3000/blissify-update"
         response = requests.get(sse_url, stream=True)
 
