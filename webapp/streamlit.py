@@ -112,6 +112,9 @@ with col6:
         st.session_state.console_output = "Démarrage de l'analyse Blissify...\n"
         sse_url = "http://localhost:3000/blissify-update"
         response = requests.get(sse_url, stream=True)
+                
+        # Create an empty container for the console output
+        console_output_container = st.empty()
 
         for line in response.iter_lines():
             if line:
