@@ -6,9 +6,28 @@ st.set_page_config(page_title="Blissify-RS database runner ",
             page_icon='🦙',
             layout="wide")
 
+with st.sidebar:
+    st.markdown(
+        """
+        <style>
+            .sidebar-title {
+                font-size: 3rem;
+            }
+            .sidebar-separator {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    st.markdown('<div class="sidebar-title">Blissify-RS</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-title">database runner</div>', unsafe_allow_html=True)
+    st.sidebar.markdown('---')
 
 # Adjust the title based on the selected model
-st.header(f"""`Blissify-RS` database runner""")
+st.write(f"""\n""")
+st.write(f"""\n""")
 
 st.write(f"""
     This little app allows users to mount his NAS media share in included MPD server as a base to build blissify database.
@@ -84,16 +103,15 @@ with col5:
                 st.session_state.console_output += line + "\n"
                 # Update the console output in the container
                 console_output_container.markdown(
-                    f'<div style="width:500px; height:500px; overflow:auto; border:1px solid #ccc; padding:10px;">{st.session_state.console_output}</div>',
+                    f'<div style="width:1024px; height:500px; overflow:auto; border:1px solid #ccc; padding:5px;">{st.session_state.console_output}</div>',
                     unsafe_allow_html=True
                 )
 
 with col6:
     if st.button("Blissify Update", key="blissify_update_button"):
-        #st.session_state.console_output = ""
-        st.session_state.console_output += f"Mise à jour Blissify: {response.text}\n"
-         # Create an empty container for the console output
-        console_output_container = st.empty()
+         st.session_state.console_output = "Démarrage de l'analyse Blissify...\n"
+        sse_url = "http://localhost:3000/blissify-update"
+        response = requests.get(sse_url, stream=True)
 
         for line in response.iter_lines():
             if line:
@@ -101,7 +119,7 @@ with col6:
                 st.session_state.console_output += line + "\n"
                 # Update the console output in the container
                 console_output_container.markdown(
-                    f'<div style="width:500px; height:500px; overflow:auto; border:1px solid #ccc; padding:10px;">{st.session_state.console_output}</div>',
+                    f'<div style="width:1024px; height:500px; overflow:auto; border:1px solid #ccc; padding:5px;">{st.session_state.console_output}</div>',
                     unsafe_allow_html=True
                 )
 
@@ -114,3 +132,4 @@ with col7:
             st.success(response.text)
         except requests.exceptions.RequestException as e:
             st.error(f"Erreur lors de la mise à jour MPC: {e}\n")
+
