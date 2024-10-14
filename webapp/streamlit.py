@@ -10,19 +10,37 @@ st.set_page_config(page_title="Blissify-RS database runner ",
 # Adjust the title based on the selected model
 st.header(f"""`Blissify-RS` database runner""")
 
-with st.expander("About this app"):
-    st.write(f"""
-    This Chatbot app allows users to interact with various models including the new LLM models hosted on DeepInfra's OpenAI compatible API.
-    For more info, you can refer to [DeepInfra's documentation](https://deepinfra.com/docs/advanced/openai_api).
+st.write(f"""
+    This little app allows users to mount his NAS media share in included MPD server as a base to build blissify database.
 
-    💡 For decent answers, you'd want to increase the `Max Tokens` value from `100` to `500`. 
+    For more info, you can refer to [Blissify-RS documentation](https://github.com/Polochon-street/blissify-rs).
+    
     """)
 
 
 st.markdown('---')
 
 # Network Path Form
-network_path = st.text_input("NAS media network path:")
+
+# Adjust the title based on the selected model
+st.header(f"""`MPD` configuration""")
+st.write(f"""\n""")
+
+
+with st.expander("Help"):
+    st.write(f"""
+    Prepare MPD for blissify-RS"
+
+    💡Path is on the linux form //192.xxx.xxx.xxx/Share
+
+    💡Once added you will have to update you MPD database by launching MPC update 
+        """)
+
+st.write(f"""\n""")
+
+network_path = st.text_input("NAS media Network Path:", value="//192.xxx.xxx.xxx/Share")
+
+st.write(f"""\n""")
 
 col1,col2,col3,col4 = st.columns(4)
 with col1:
@@ -34,7 +52,7 @@ with col1:
             st.error(f"Erreur lors du montage du NAS: {e}")
 
 with col2:
-    if st.button("MPC update command", key="mpc_update_button"):
+    if st.button("MPC update", key="mpc_update_button"):
         try:
             response = requests.get("http://localhost:3000/mpc-update")
             st.success(response.text)
@@ -42,6 +60,11 @@ with col2:
             st.error(f"Erreur lors de la mise à jour MPC: {e}\n")
 
 st.markdown('---')
+
+
+st.header(f"""`Blissify` operations""")
+st.write(f"""\n""")
+
 
 # Buttons for Operations
 col5,col6,col7,col8 = st.columns(4)
@@ -91,5 +114,3 @@ with col7:
             st.success(response.text)
         except requests.exceptions.RequestException as e:
             st.error(f"Erreur lors de la mise à jour MPC: {e}\n")
-
-st.markdown('---')
